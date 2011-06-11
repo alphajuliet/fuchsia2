@@ -21,15 +21,8 @@ var Info = {
 }
 
 // -----------------------------------------
-function supports_html5_storage() {
-  try {
-    return 'localStorage' in window && window['localStorage'] !== null;
-  } catch (e) {
-    return false;
-  }
-}
-
-store = new sqlDB();
+// store = new sqlDB();
+store = new html5Storage();
 
 // -----------------------------------------
 var captured = null;
@@ -218,15 +211,16 @@ function newNote() {
     note.zIndex = ++highestZ;
     note.saveAsNew();
 }
- 
+
+function deleteAllNotes() {
+	alert("Not implemented.");
+}
+
 if (store.isAvailable)
     addEventListener('load', loaded, false);
 
 function initialise() {
 	Info.appendTo("heading");
-	if (!supports_html5_storage) {
-		alert("HTML5 local storage not supported in this browser");
-	}
 }
 
 // -----------------------------------------
