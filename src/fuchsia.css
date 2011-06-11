@@ -1,0 +1,83 @@
+/* fuchsia.css */
+
+body {
+    font-family: 'Helvetica Neue', Lucida Grande, sans-serif;
+}
+ 
+label, input[type="button"], input[type="submit"], input[type="image"], button { cursor: pointer; }
+
+.header {
+	
+}
+
+.title {
+	font-size: 150%;
+	font-weight: bold;
+	margin: 0px 5px;
+}
+
+.note {
+	font-family: Helvetica Neue, Helvetica, Trebuchet MS, sans-serif;
+	font-size: 85%;
+    background-color: #ff6;
+    height: 125px;
+    width: 150px;
+    padding: 10px;
+    position: absolute;
+    -webkit-box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.5);
+}
+ 
+.note:nth-child(3n) { background-color: #afa; }
+.note:nth-child(3n+1) { background-color: #ccf; }
+
+.note:hover .closebutton {
+    display: block;
+}
+ 
+.closebutton {
+    display: none;
+    background-image: url(deleteButton.png);
+    height: 30px;
+    position: absolute;
+    left: -15px;
+    top: -15px;
+    width: 30px;
+}
+ 
+.closebutton:active {
+    background-image: url(deleteButtonPressed.png);
+}
+ 
+.edit {
+    outline: none;
+}
+ 
+.timestamp {
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    font-size: 9px;
+    background-color: #db0;
+    color: white;
+    border-top: 1px solid #a80;
+    padding: 2px 4px;
+    text-align: right;
+}
+
+/* button {
+	font-size: 90%;
+	color: #999;	
+	border: 1px solid #999;
+	background-color: #f8f8f8;
+	padding: 2px 5px;
+	margin: 2px 5px;
+}
+
+button:hover {
+	cursor: pointer;
+	color: #fff;
+	background-color: #c06;
+	background-image: none;
+} */
+

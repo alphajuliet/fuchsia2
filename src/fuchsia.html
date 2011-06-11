@@ -1,0 +1,24 @@
+<!doctype html> 
+<html manifest="fuchsia2.manifest"> 
+	<head> 
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<title>fuchsia 2</title> 
+		<meta name="description" content="fuchsia2">
+		<meta name="author" content="AndrewJ">
+		<link rel="shortcut icon" href="/favicon.ico">
+		<link rel="stylesheet" href="fuchsia.css" type="text/css"/>
+		<script type="text/javascript" src="webSQL.js"></script>
+		<script type="text/javascript" src="fuchsia.js"></script>
+	</head> 
+	<body>
+		<div id="heading"></div>
+		<div id="buttons">
+			<button id="newNoteButton" onclick="newNote()">New Note</button> 
+			<button id="clearNotesButton" onclick="deleteAllNotes()">Remove All</button>
+		</div>
+		<script> 
+			document.getElementById("newNoteButton").disabled = !store.isAvailable;
+		</script> 
+	</body> 
+</html>
