@@ -15,6 +15,7 @@ Backlog
 * Make browser independent
    * Use [Modernizr][] to detect browser capabilities
    * Use [jQuery][] to isolate browser differences
+* Save and load sessions
 
 Done
 ------

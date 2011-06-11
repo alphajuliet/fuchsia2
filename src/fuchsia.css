@@ -12,13 +12,17 @@ label, input[type="button"], input[type="submit"], input[type="image"], button {
 
 .title {
 	font-size: 150%;
+	color: #fff;
+	background-color: #939;
 	font-weight: bold;
+	padding: 0px 5px;
 	margin: 0px 5px;
+    -webkit-box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.5);	
 }
 
 .note {
 	font-family: Helvetica Neue, Helvetica, Trebuchet MS, sans-serif;
-	font-size: 85%;
+	font-size: 80%;
     background-color: #ff6;
     height: 125px;
     width: 150px;
@@ -26,9 +30,11 @@ label, input[type="button"], input[type="submit"], input[type="image"], button {
     position: absolute;
     -webkit-box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.5);
 }
- 
+
+/*
 .note:nth-child(3n) { background-color: #afa; }
 .note:nth-child(3n+1) { background-color: #ccf; }
+*/
 
 .note:hover .closebutton {
     display: block;

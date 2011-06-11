@@ -28,6 +28,14 @@ store = new html5Storage();
 var captured = null;
 var highestZ = 0;
 var highestId = 0;
+
+var colours = [
+	'#ffffff','#d0d0d0','#777777','#000000', 				// monochromes
+	'#ffaaaa','#ff00ff', '#ff0000','#aa0000','#9000ff', // reds
+	'#ff6c00', '#ffff00', '#ffbb00', '#f0e68c','#d2b229', // browns/oranges/yellows
+	'#aaffaa','#00ff00','#00aa00','#6b8e23','#007700', // greens
+	'#bbddff','#00ffdd', '#aaaaff','#0000ff','#0000aa' // blues
+];
  
 // -----------------------------------------
 function Note() {
@@ -72,7 +80,7 @@ Note.prototype = {
     set id(x) { this._id = x;},
     get text() { return this.editField.innerHTML; },
     set text(x) { this.editField.innerHTML = x; },
- 
+    
     get timestamp() {
         if (!("_timestamp" in this))
             this._timestamp = 0;
@@ -94,7 +102,9 @@ Note.prototype = {
     get top() { return this.note.style.top; },
     set top(x) { this.note.style.top = x; },
     get zIndex() { return this.note.style.zIndex; },
-    set zIndex(x) { this.note.style.zIndex = x; },
+    set zIndex(x) { this.note.style.zIndex = x; }, 
+//    get bgcolor() { return this.style.backgroundColor; },
+//    set bgcolor(c) { this.style.backgroundColor = c; },
  
     close: function(event) {
         this.cancelPendingSave();
@@ -140,7 +150,6 @@ Note.prototype = {
  
     saveAsNew: function() {
         this.timestamp = new Date().getTime();
-        
         var note = this;
         store.createNote(note);
     },
