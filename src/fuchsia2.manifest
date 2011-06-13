@@ -1,6 +1,6 @@
 CACHE MANIFEST
-deleteButton.png
-deleteButtonPressed.png
-fuchsia.css
-fuchsia.js
-html5Storage.js
+images/deleteButton.png
+images/deleteButtonPressed.png
+css/fuchsia.css
+js/fuchsia.js
+js/html5Storage.js
