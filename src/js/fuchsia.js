@@ -6,8 +6,8 @@
 var Info = {
 	name: "fuchsia",
 	author: "AndrewJ", 
-	version: "2.0.0",
-	date: "2011-06-11",
+	version: "2.0.1",
+	date: "2011-06-13",
 	appendTo: function(tagName) {
 		var src = document.getElementById(tagName);
 		var title = document.createElement('span');
@@ -20,7 +20,11 @@ var Info = {
 	},
 }
 
+var supportsTouch = 'createTouch' in document;
+var debug = true;
+
 // -----------------------------------------
+// Storage options
 // store = new sqlDB();
 // store = new html5Storage();
 store = new DovetailDBStore();
@@ -45,7 +49,11 @@ function Note() {
     var note = document.createElement('div');
     note.className = 'note';
     note.addEventListener('mousedown', function(e) { return self.onMouseDown(e) }, false);
-    note.addEventListener('click', function() { return self.onNoteClick() }, false);
+    note.addEventListener('click', function() { return self.onNoteClick() }, false); 
+    // iPad drag note
+    supportsTouch && note.addEventListener('touchstart', function (e) { return self.onTouchStart(e) }, false);
+    supportsTouch && note.addEventListener('touchend', function (e) { return self.onTouchEnd(e) }, false);
+    supportsTouch && note.addEventListener('touchcancel', function (e) { return self.onTouchEnd(e) }, false);
     this.note = note;
  
     var close = document.createElement('div');
@@ -169,7 +177,7 @@ Note.prototype = {
  
         document.addEventListener('mousemove', this.mouseMoveHandler, true);
         document.addEventListener('mouseup', this.mouseUpHandler, true);
- 
+        
         return false;
     },
  
@@ -199,6 +207,53 @@ Note.prototype = {
         this.dirty = true;
         this.saveSoon();
     },
+    
+    // -----------------------------------------
+    // iPad touch events. Similar to mouse events above.
+    // See http://developer.apple.com/library/safari/#documentation/InternetWeb/Conceptual/SafariVisualEffectsProgGuide/InteractiveVisualEffects/InteractiveVisualEffects.html
+    onTouchStart: function (e) {
+    	e.preventDefault();
+    	if (e.targetTouches.length != 1)
+    		return false;
+
+        captured = this;
+        this.startX = e.targetTouches[0].clientX - this.note.offsetLeft;
+        this.startY = e.targetTouches[0].clientY - this.note.offsetTop;
+        this.zIndex = ++highestZ;
+
+        var self = this;
+        if (!("touchMoveHandler" in this)) {
+            this.touchMoveHandler = function (e) { return self.onTouchMove(e) }
+            this.touchEndHandler = function (e) { return self.onTouchEnd(e) }
+        }
+        document.addEventListener('touchmove', this.touchMoveHandler, true);
+        document.addEventListener('touchend', this.touchEndHandler, true);
+        document.addEventListener('touchcancel', this.touchEndHandler, true);
+    },
+    
+    onTouchMove: function(e) {
+    	e.preventDefault();
+        if (this != captured)
+            return true;
+        this.left = e.targetTouches[0].clientX - this.startX + 'px';
+        this.top = e.targetTouches[0].clientY - this.startY + 'px';
+        return false;
+    },
+
+    onTouchEnd: function () {
+        // debug && alert("touchEnd event");
+        // e.preventDefault();
+        this.save();
+
+    	if (e.targetTouches.length > 0)
+    		return false;
+        document.removeEventListener('touchmove', this.touchMoveHandler, true);
+        document.removeEventListener('touchend', this.touchEndHandler, true);
+        document.removeEventListener('touchcancel', this.touchEndHandler, true);
+    	
+        return false;    	
+    },
+    
 }
  
 // -----------------------------------------
