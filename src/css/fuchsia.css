@@ -42,7 +42,7 @@ label, input[type="button"], input[type="submit"], input[type="image"], button {
  
 .closebutton {
     display: none;
-    background-image: url(deleteButton.png);
+    background-image: url(../images/deleteButton.png);
     height: 30px;
     position: absolute;
     left: -15px;
@@ -51,7 +51,7 @@ label, input[type="button"], input[type="submit"], input[type="image"], button {
 }
  
 .closebutton:active {
-    background-image: url(deleteButtonPressed.png);
+    background-image: url(../images/deleteButtonPressed.png);
 }
  
 .edit {

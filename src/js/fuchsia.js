@@ -22,7 +22,8 @@ var Info = {
 
 // -----------------------------------------
 // store = new sqlDB();
-store = new html5Storage();
+// store = new html5Storage();
+store = new DovetailDBStore();
 
 // -----------------------------------------
 var captured = null;
@@ -126,7 +127,7 @@ Note.prototype = {
     saveSoon: function() {
         this.cancelPendingSave();
         var self = this;
-        this._saveTimer = setTimeout(function() { self.save() }, 200);
+        this._saveTimer = setTimeout(function() { self.save() }, 2000);
     },
  
     cancelPendingSave: function() {
@@ -222,7 +223,7 @@ function newNote() {
 }
 
 function deleteAllNotes() {
-	alert("Not implemented.");
+	store.deleteAllNotes();
 }
 
 if (store.isAvailable)
