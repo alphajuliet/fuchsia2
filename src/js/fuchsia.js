@@ -63,7 +63,7 @@ function Note() {
  
     var edit = document.createElement('div');
     edit.className = 'edit';
-    edit.setAttribute('contenteditable', true);
+    edit.setAttribute('contentEditable', true);
     edit.addEventListener('keyup', function() { return self.onKeyUp() }, false);
     note.appendChild(edit);
     this.editField = edit;
@@ -74,6 +74,11 @@ function Note() {
     note.appendChild(ts);
     this.lastModified = ts;
  
+    var colour = document.createElement('div');
+    colour.className = 'colourButton';
+    colour.addEventListener('click', function(event) { return self.changeColour(event) }, false);
+    note.appendChild(colour);
+    
     document.body.appendChild(note);
     return this;
 }
@@ -211,6 +216,7 @@ Note.prototype = {
     // -----------------------------------------
     // iPad touch events. Similar to mouse events above.
     // See http://developer.apple.com/library/safari/#documentation/InternetWeb/Conceptual/SafariVisualEffectsProgGuide/InteractiveVisualEffects/InteractiveVisualEffects.html
+    // @@TODO Refactor these events into the mouse events above to remove duplication.
     onTouchStart: function (e) {
     	e.preventDefault();
     	if (e.targetTouches.length != 1)

@@ -11,14 +11,19 @@ It is based on an HTML5 [demo page](http://net.tutsplus.com/articles/news/create
 
 Backlog
 ---------
-* Make work on iPad
-	* Edit text on iPad
+* Make it work on iPad
+	* Edit note text on iPad --> waiting on update to MobileSafari to support the HTML5 contentEditable attribute
+	* Increase text size on iPad
+	* Remove browser bar on iPad
 * Delete all notes
 * Change the colour of a note
 * Make browser independent
 	* Use [Modernizr][] to detect browser capabilities
 	* Use [jQuery][] to isolate browser differences
-* Save and load sessions
+* Save and load separate sessions
+* Refactor event handling
+* Enable offline working and resync back to cloud store
+* Make it work on my Android phone
 
 Done
 ------
