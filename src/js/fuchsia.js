@@ -6,8 +6,8 @@
 var Info = {
 	name: "fuchsia",
 	author: "AndrewJ", 
-	version: "2.0.1",
-	date: "2011-06-13",
+	version: "2.0.2",
+	date: "2024-04-20",
 	appendTo: function(tagName) {
 		var src = document.getElementById(tagName);
 		var title = document.createElement('span');
@@ -26,8 +26,8 @@ var debug = true;
 // -----------------------------------------
 // Storage options
 // store = new sqlDB();
-// store = new html5Storage();
-store = new DovetailDBStore();
+store = new html5Storage();
+// store = new DovetailDBStore();
 
 // -----------------------------------------
 var captured = null;
