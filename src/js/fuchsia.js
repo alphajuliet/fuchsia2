@@ -322,6 +322,19 @@ if (store.isAvailable)
 
 function initialise() {
 	Info.appendTo("heading");
+
+    const buttons = document.getElementById('buttons');
+
+    const newNoteButton = document.createElement('button');
+    newNoteButton.onclick = newNote;
+    newNoteButton.accessKey = 'n';
+    newNoteButton.innerHTML = 'New Note';
+    buttons.appendChild(newNoteButton);
+
+    const clearNotesButton = document.createElement('button');
+    clearNotesButton.onclick = deleteAllNotes;
+    clearNotesButton.innerHTML = 'Remove All';
+    buttons.appendChild(clearNotesButton);
 }
 
 // -----------------------------------------
