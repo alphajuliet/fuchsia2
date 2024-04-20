@@ -8,10 +8,6 @@ label, input[type="button"], input[type="submit"], input[type="image"], button {
     cursor: pointer; 
 }
 
-.header {
-	
-}
-
 .title {
 	font-size: 150%;
 	color: #fff;
@@ -39,12 +35,8 @@ label, input[type="button"], input[type="submit"], input[type="image"], button {
     overflow: auto;
 }
 
-/*
-.note:nth-child(3n) { background-color: #afa; }
-.note:nth-child(3n+1) { background-color: #ccf; }
-*/
-
-.note:hover .closebutton {
+.note:hover .closebutton,
+.note:hover .colourButton {
     display: block;
 }
  
@@ -63,9 +55,9 @@ label, input[type="button"], input[type="submit"], input[type="image"], button {
 }
 
 .colourButton {
+    display: none;
     font-size: 7pt;
     text-align: center;
-	display: block;
 	height: 20px;
 	width: 20px;
 	position: absolute;
