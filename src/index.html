@@ -21,9 +21,10 @@
 	<body>
 		<div id="heading"></div>
 		<div id="buttons">
-			<button id="newNoteButton" onclick="newNote()">New Note</button> 
+			<button id="newNoteButton" onclick="newNote()" accesskey="n">New Note</button> 
 			<button id="clearNotesButton" onclick="deleteAllNotes()">Remove All</button>
 		</div>
+		<div id="notes"></div>
 		<script> 
 			document.getElementById("newNoteButton").disabled = !store.isAvailable;
 		</script> 

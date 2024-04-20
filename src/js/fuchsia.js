@@ -3,25 +3,25 @@
 // Based on http://net.tutsplus.com/articles/news/create-a-sticky-note-effect-in-5-easy-steps-with-css3-and-html5/
 // -----------------------------------------
 // Object: info
-var Info = {
+const Info = {
 	name: "fuchsia",
 	author: "AndrewJ", 
 	version: "2.0.2",
 	date: "2024-04-20",
 	appendTo: function(tagName) {
-		var src = document.getElementById(tagName);
-		var title = document.createElement('span');
+		const src = document.getElementById(tagName);
+		const title = document.createElement('span');
 		title.className = 'title';
 		title.appendChild(document.createTextNode(this.name));
-		var str = document.createElement('p');
+		const str = document.createElement('p');
 		str.appendChild(title);
 		str.appendChild(document.createTextNode(this.version));
 		src.appendChild(str);
 	},
 }
 
-var supportsTouch = 'createTouch' in document;
-var debug = true;
+const supportsTouch = 'createTouch' in document;
+const debug = true;
 
 // -----------------------------------------
 // Storage options
@@ -32,9 +32,9 @@ store = new html5Storage();
 // -----------------------------------------
 var captured = null;
 var highestZ = 0;
-var highestId = 0;
+var highestId = 0; // Global id counter
 
-var colours = [
+const colours = [
 	'#ffffff','#d0d0d0','#777777','#000000', 				// monochromes
 	'#ffaaaa','#ff00ff', '#ff0000','#aa0000','#9000ff', // reds
 	'#ff6c00', '#ffff00', '#ffbb00', '#f0e68c','#d2b229', // browns/oranges/yellows
@@ -46,8 +46,9 @@ var colours = [
 function Note() {
     var self = this;
  
-    var note = document.createElement('div');
+    const note = document.createElement('div');
     note.className = 'note';
+    note.setAttribute('id', `note_${this.id}`);
     note.addEventListener('mousedown', function(e) { return self.onMouseDown(e) }, false);
     note.addEventListener('click', function() { return self.onNoteClick() }, false); 
     // iPad drag note
@@ -56,30 +57,30 @@ function Note() {
     supportsTouch && note.addEventListener('touchcancel', function (e) { return self.onTouchEnd(e) }, false);
     this.note = note;
  
-    var close = document.createElement('div');
+    const close = document.createElement('div');
     close.className = 'closebutton';
     close.addEventListener('click', function(event) { return self.close(event) }, false);
     note.appendChild(close);
  
-    var edit = document.createElement('div');
+    const edit = document.createElement('div');
     edit.className = 'edit';
     edit.setAttribute('contentEditable', true);
     edit.addEventListener('keyup', function() { return self.onKeyUp() }, false);
     note.appendChild(edit);
     this.editField = edit;
  
-    var ts = document.createElement('div');
+    const ts = document.createElement('div');
     ts.className = 'timestamp';
     ts.addEventListener('mousedown', function(e) { return self.onMouseDown(e) }, false);
     note.appendChild(ts);
     this.lastModified = ts;
  
-    var colour = document.createElement('div');
+    const colour = document.createElement('div');
     colour.className = 'colourButton';
     colour.addEventListener('click', function(event) { return self.changeColour(event) }, false);
     note.appendChild(colour);
     
-    document.body.appendChild(note);
+    document.getElementById('notes').appendChild(note);
     return this;
 }
  
@@ -87,7 +88,7 @@ function Note() {
 Note.prototype = {
     get id() {
         if (!("_id" in this))
-            this._id = 0;
+            this._id = ++highestId;
         return this._id;
     },
  
@@ -281,10 +282,12 @@ function newNote() {
     note.top = Math.round(Math.random() * 500) + 'px';
     note.zIndex = ++highestZ;
     note.saveAsNew();
+    note.note.getElementsByClassName('edit')[0].focus();
 }
 
 function deleteAllNotes() {
 	store.deleteAllNotes();
+    document.getElementById('notes').innerHTML = '';
 }
 
 if (store.isAvailable)
