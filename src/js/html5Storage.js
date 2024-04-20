@@ -74,6 +74,7 @@ function html5Storage() {
 				highestId = note.id;
 			if (note.zIndex > highestZ)
 				highestZ = note.zIndex;
+			notes.push(note);
 		}, function () {
 			// newNote();
 		});

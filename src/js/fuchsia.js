@@ -316,11 +316,10 @@ if (store.isAvailable)
     addEventListener('load', loaded, false);
 
 function randomiseLocations() {
-    // Does not work yet
     console.log(notes);
     const width = window.innerWidth;
     const height = window.innerHeight;
-    const margin = 20;
+    const margin = 100;
     for (let i = 0; i < notes.length; i++) {
         notes[i].left = Math.round(margin + Math.random() * (width - margin)) + 'px';
         notes[i].top = Math.round(margin + Math.random() * (height - margin)) + 'px';
