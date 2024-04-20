@@ -25,9 +25,7 @@ const debug = true;
 
 // -----------------------------------------
 // Storage options
-// store = new sqlDB();
-store = new html5Storage();
-// store = new DovetailDBStore();
+const store = new html5Storage();
 
 // -----------------------------------------
 var captured = null;
@@ -35,13 +33,13 @@ var highestZ = 0;
 var highestId = 0; // Global id counter
 
 const colours = [
-	'#ffffff','#d0d0d0','#777777','#000000', 				// monochromes
-	'#ffaaaa','#ff00ff', '#ff0000','#aa0000','#9000ff', // reds
-	'#ff6c00', '#ffff00', '#ffbb00', '#f0e68c','#d2b229', // browns/oranges/yellows
-	'#aaffaa','#00ff00','#00aa00','#6b8e23','#007700', // greens
-	'#bbddff','#00ffdd', '#aaaaff','#0000ff','#0000aa' // blues
+    '#ffffff', '#d0d0d0', '#777777', '#888888', 				// monochromes
+    '#ffaaaa', '#ff88ff', '#ff8888', '#aa4444', '#9044ff', // reds
+    '#ff6c44', '#ffff88', '#ffbb44', '#f0e68c', '#d2b229', // browns/oranges/yellows
+    '#aaffaa', '#88ff888', '#44aa44', '#6b8e23', '#447744', // greens
+    '#bbddff', '#88ffdd', '#aaaaff', '#4488ff', '#88aacc' // blues
 ];
- 
+
 // -----------------------------------------
 function Note() {
     var self = this;
@@ -72,11 +70,13 @@ function Note() {
     const ts = document.createElement('div');
     ts.className = 'timestamp';
     ts.addEventListener('mousedown', function(e) { return self.onMouseDown(e) }, false);
-    note.appendChild(ts);
+    // note.appendChild(ts);
     this.lastModified = ts;
  
-    const colour = document.createElement('div');
+    const colour = document.createElement('button');
     colour.className = 'colourButton';
+    colour.setAttribute('type', 'button');
+    colour.innerText = 'C';
     colour.addEventListener('click', function(event) { return self.changeColour(event) }, false);
     note.appendChild(colour);
     
@@ -112,6 +112,8 @@ Note.prototype = {
         this.lastModified.textContent = modifiedString(date);
     },
  
+    get colour() { return this.note.style.backgroundColor; },
+    set colour(c) { this.note.style.backgroundColor = c; },
     get left() { return this.note.style.left; },
     set left(x) { this.note.style.left = x; },
     get top() { return this.note.style.top; },
@@ -137,10 +139,15 @@ Note.prototype = {
         var self = this;
         setTimeout(function() { document.body.removeChild(self.note) }, duration * 1000);
     },
+
+    changeColour: function(event) {
+        const self = this;
+        self.colour = randomColour();
+    },
  
     saveSoon: function() {
         this.cancelPendingSave();
-        var self = this;
+        const self = this;
         this._saveTimer = setTimeout(function() { self.save() }, 2000);
     },
  
@@ -165,7 +172,7 @@ Note.prototype = {
  
     saveAsNew: function() {
         this.timestamp = new Date().getTime();
-        var note = this;
+        const note = this;
         store.createNote(note);
     },
  
@@ -175,7 +182,7 @@ Note.prototype = {
         this.startY = e.clientY - this.note.offsetTop;
         this.zIndex = ++highestZ;
  
-        var self = this;
+        const self = this;
         if (!("mouseMoveHandler" in this)) {
             this.mouseMoveHandler = function(e) { return self.onMouseMove(e) }
             this.mouseUpHandler = function(e) { return self.onMouseUp(e) }
@@ -223,12 +230,12 @@ Note.prototype = {
     	if (e.targetTouches.length != 1)
     		return false;
 
-        captured = this;
+        const captured = this;
         this.startX = e.targetTouches[0].clientX - this.note.offsetLeft;
         this.startY = e.targetTouches[0].clientY - this.note.offsetTop;
         this.zIndex = ++highestZ;
 
-        var self = this;
+        const self = this;
         if (!("touchMoveHandler" in this)) {
             this.touchMoveHandler = function (e) { return self.onTouchMove(e) }
             this.touchEndHandler = function (e) { return self.onTouchEnd(e) }
@@ -272,6 +279,10 @@ function loaded() {
 function modifiedString(date) {
     return 'Last Modified: ' + date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
 }
+
+function randomColour() {
+    return colours[Math.floor(Math.random() * colours.length)];
+}
  
 // -----------------------------------------
 function newNote() {
@@ -281,6 +292,8 @@ function newNote() {
     note.left = Math.round(Math.random() * 400) + 'px';
     note.top = Math.round(Math.random() * 500) + 'px';
     note.zIndex = ++highestZ;
+    // note.colour = "#ffff66";
+    note.colour = randomColour();
     note.saveAsNew();
     note.note.getElementsByClassName('edit')[0].focus();
 }

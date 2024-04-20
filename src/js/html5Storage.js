@@ -21,12 +21,14 @@ function html5Storage() {
 	
 	// ---------------------------------------
 	this.createNote = function (note) {
-		localStorage[prefix + note.id] = [note.text, note.timestamp, note.left, note.top, note.zIndex];
+		const encodedColour = encodeURIComponent(note.colour);
+		localStorage[prefix + note.id] = [note.text, encodedColour, note.timestamp, note.left, note.top, note.zIndex];
 	}
 	
 	// ---------------------------------------
 	this.updateNote = function (note) {
-		localStorage[prefix + note.id] = [note.text, note.timestamp, note.left, note.top, note.zIndex];
+		const encodedColour = encodeURIComponent(note.colour);
+		localStorage[prefix + note.id] = [note.text, encodedColour, note.timestamp, note.left, note.top, note.zIndex];
 	}
 	
 	// ---------------------------------------
@@ -43,12 +45,12 @@ function html5Storage() {
 	// Iterate over the local store. 
 	// Execute fn1 for each key-value pair, or execute fn2 if none.
 	this.forEach = function (fn1, fn2) {
-		var len = localStorage.length;
+		const len = localStorage.length;
 		if (len == 0)
 			fn2();
 		for (var i=0; i<len; i++) {
-			var k = localStorage.key(i);
-			var v = localStorage[k];
+			const k = localStorage.key(i);
+			const v = localStorage[k];
 			fn1(k, v);
 		}
 	}
@@ -56,22 +58,22 @@ function html5Storage() {
 	// ---------------------------------------
  	this.loadNotes = function () {
 		this.forEach(function (key, val) {
+			const note = new Note();
 			var v = val.split(',');
-			var note = new Note();
 			note.id = key.substr(prefix.length, key.length-1);
-			note.text = v[0];
-			note.timestamp = v[1];
-			note.left = v[2];
-			note.top = v[3];
-			note.zIndex = v[4];
-			// note.bgColor = v[5];
+			note.text = v.shift();
+			note.colour = decodeURIComponent(v.shift());
+			note.timestamp = v.shift();
+			note.left = v.shift();
+			note.top = v.shift();
+			note.zIndex = v.shift();
 
 			if (note.id > highestId)
 				highestId = note.id;
 			if (note.zIndex > highestZ)
 				highestZ = note.zIndex;
 		}, function () {
-			newNote();
+			// newNote();
 		});
 	}
 	
