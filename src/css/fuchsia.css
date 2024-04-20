@@ -33,6 +33,12 @@ label, input[type="button"], input[type="submit"], input[type="image"], button {
     box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.5);
 }
 
+.edit {
+    height: 120px;
+    width: 150px;
+    overflow: auto;
+}
+
 /*
 .note:nth-child(3n) { background-color: #afa; }
 .note:nth-child(3n+1) { background-color: #ccf; }

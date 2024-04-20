@@ -36,7 +36,7 @@ const colours = [
     '#ffffff', '#d0d0d0', '#777777', '#888888', 				// monochromes
     '#ffaaaa', '#ff88ff', '#ff8888', '#aa4444', '#9044ff', // reds
     '#ff6c44', '#ffff88', '#ffbb44', '#f0e68c', '#d2b229', // browns/oranges/yellows
-    '#aaffaa', '#88ff888', '#44aa44', '#6b8e23', '#447744', // greens
+    '#aaffaa', '#88ff88', '#44aa44', '#6b8e23', '#77aa77', // greens
     '#bbddff', '#88ffdd', '#aaaaff', '#4488ff', '#88aacc' // blues
 ];
 
@@ -64,6 +64,11 @@ function Note() {
     edit.className = 'edit';
     edit.setAttribute('contentEditable', true);
     edit.addEventListener('keyup', function() { return self.onKeyUp() }, false);
+    edit.addEventListener("paste", function(e) { 
+        e.preventDefault(); 
+        const text = e.clipboardData.getData("text/plain"); 
+        document.execCommand("insertHTML", false, text); 
+    }, false);
     note.appendChild(edit);
     this.editField = edit;
  
@@ -94,7 +99,7 @@ Note.prototype = {
  
     set id(x) { this._id = x;},
     get text() { return this.editField.innerHTML; },
-    set text(x) { this.editField.innerHTML = x; },
+    set text(x) { this.editField.innerHTML = convertToPlain(x); },
     
     get timestamp() {
         if (!("_timestamp" in this))
@@ -297,6 +302,15 @@ function newNote() {
     note.saveAsNew();
     note.note.getElementsByClassName('edit')[0].focus();
 }
+
+function convertToPlain(html){
+    // Create a new div element
+    var tempDivElement = document.createElement("div");
+    // Set the HTML content with the given value
+    tempDivElement.innerHTML = html;
+    // Retrieve the text property of the element 
+    return tempDivElement.textContent || tempDivElement.innerText || "";
+} 
 
 function deleteAllNotes() {
 	store.deleteAllNotes();
