@@ -1,5 +1,11 @@
 /* fuchsia.css */
 
+:root {
+    --note-height: 125px;
+    --note-width: 150px;
+    --selection-colour: yellow;
+}
+
 body {
     font-family: Inter, 'Helvetica Neue', Lucida Grande, sans-serif;
 }
@@ -23,23 +29,22 @@ label, input[type="button"], input[type="submit"], input[type="image"], button {
 }
 
 button:hover {
-    background-color: yellow;
+    background-color: var(--selection-colour);
 }
 
 .note {
 	font-family: Inter, Helvetica Neue, Helvetica, Trebuchet MS, sans-serif;
 	font-size: 80%;
-    /* background-color: #ff6; */
-    height: 125px;
-    width: 150px;
+    height: var(--note-height);
+    width: var(--note-width);
     padding: 10px;
     position: absolute;
     box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.5);
 }
 
 .edit {
-    height: 120px;
-    width: 150px;
+    height: calc(var(--note-height) - 10px);
+    width: var(--note-width);
     overflow: auto;
 }
 

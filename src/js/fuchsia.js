@@ -2,6 +2,8 @@
 // fuchsia.js
 // Based on http://net.tutsplus.com/articles/news/create-a-sticky-note-effect-in-5-easy-steps-with-css3-and-html5/
 // -----------------------------------------
+"use strict";
+
 // Object: info
 const Info = {
 	name: "fuchsia",
@@ -25,24 +27,25 @@ const debug = true;
 
 // -----------------------------------------
 // Storage options
+let notes = [];
 const store = new html5Storage();
 
 // -----------------------------------------
-var captured = null;
-var highestZ = 0;
-var highestId = 0; // Global id counter
+let captured = null;
+let highestZ = 0;
+let highestId = 0; // Global id counter
 
 const colours = [
-    '#ffffff', '#aaaaaa', '#888888', '#cccccc', 		   // monochromes
-    '#ffcccc', '#ff88ff', '#ddaaaa', '#aa6666', '#aa66ff', // reds
-    '#ff6c44', '#ffff88', '#ffbb44', '#f0e68c', '#d2b229', // browns/oranges/yellows
-    '#aaffaa', '#88ff88', '#77aa77', '#8bae43', '#77ccaa', // greens
-    '#bbddff', '#88ffdd', '#ccccff', '#88ccff', '#88aacc'  // blues
+    '#ffffff', '#aaaaaa', '#cccccc', 		   // monochromes
+    '#ffcccc', '#ffccff', '#ddaaaa', '#cc8888', '#ff88cc', // reds
+    '#ff8844', '#ffff88', '#ffcc44', '#f0e68c', '#f2c249', // browns/oranges/yellows
+    '#aaffaa', '#88ff88', '#77cc77', '#8bae43', '#77ccaa', // greens
+    '#bbddff', '#88ffcc', '#ccccff', '#aaffff', '#88aacc'  // blues
 ];
 
 // -----------------------------------------
 function Note() {
-    var self = this;
+    let self = this;
  
     const note = document.createElement('div');
     note.className = 'note';
@@ -99,7 +102,7 @@ Note.prototype = {
  
     set id(x) { this._id = x;},
     get text() { return this.editField.innerHTML; },
-    set text(x) { this.editField.innerHTML = convertToPlain(x); },
+    set text(x) { this.editField.innerHTML = x; },
     
     get timestamp() {
         if (!("_timestamp" in this))
@@ -112,7 +115,7 @@ Note.prototype = {
             return;
  
         this._timestamp = x;
-        var date = new Date();
+        let date = new Date();
         date.setTime(parseFloat(x));
         this.lastModified.textContent = modifiedString(date);
     },
@@ -131,17 +134,17 @@ Note.prototype = {
     close: function(event) {
         this.cancelPendingSave();
  
-        var note = this;
+        let note = this;
         store.deleteNote(note);
 
-        var duration = event.shiftKey ? 2 : .25;
+        let duration = event.shiftKey ? 2 : .25;
         this.note.style.webkitTransition = '-webkit-transform ' + duration + 's ease-in, opacity ' + duration + 's ease-in';
         this.note.offsetTop; // Force style recalc
         this.note.style.webkitTransformOrigin = "0 0";
         this.note.style.webkitTransform = 'skew(30deg, 0deg) scale(0)';
         this.note.style.opacity = '0';
  
-        var self = this;
+        let self = this;
         setTimeout(function() { document.body.removeChild(self.note) }, duration * 1000);
     },
 
@@ -171,7 +174,7 @@ Note.prototype = {
             delete this.dirty;
         }
  
-        var note = this;
+        let note = this;
         store.updateNote(note);
     },
  
@@ -291,50 +294,64 @@ function randomColour() {
  
 // -----------------------------------------
 function newNote() {
-    var note = new Note();
+    let note = new Note();
     note.id = ++highestId;
     note.timestamp = new Date().getTime();
     note.left = Math.round(Math.random() * 400) + 'px';
     note.top = Math.round(Math.random() * 500) + 'px';
     note.zIndex = ++highestZ;
-    // note.colour = "#ffff66";
     note.colour = randomColour();
     note.saveAsNew();
     note.note.getElementsByClassName('edit')[0].focus();
+    notes.push(note);
 }
-
-function convertToPlain(html){
-    // Create a new div element
-    var tempDivElement = document.createElement("div");
-    // Set the HTML content with the given value
-    tempDivElement.innerHTML = html;
-    // Retrieve the text property of the element 
-    return tempDivElement.textContent || tempDivElement.innerText || "";
-} 
 
 function deleteAllNotes() {
 	store.deleteAllNotes();
+    notes = [];
     document.getElementById('notes').innerHTML = '';
 }
 
 if (store.isAvailable)
     addEventListener('load', loaded, false);
 
-function initialise() {
-	Info.appendTo("heading");
+function randomiseLocations() {
+    // Does not work yet
+    console.log(notes);
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const margin = 20;
+    for (let i = 0; i < notes.length; i++) {
+        notes[i].left = Math.round(margin + Math.random() * (width - margin)) + 'px';
+        notes[i].top = Math.round(margin + Math.random() * (height - margin)) + 'px';
+    }
+}
 
+function addButtons() {
     const buttons = document.getElementById('buttons');
 
     const newNoteButton = document.createElement('button');
     newNoteButton.onclick = newNote;
     newNoteButton.accessKey = 'n';
     newNoteButton.innerHTML = 'New Note';
+    newNoteButton.disabled = !store.isAvailable;
     buttons.appendChild(newNoteButton);
 
     const clearNotesButton = document.createElement('button');
     clearNotesButton.onclick = deleteAllNotes;
     clearNotesButton.innerHTML = 'Remove All';
     buttons.appendChild(clearNotesButton);
+
+    const randomiseButton = document.createElement('button');
+    randomiseButton.onclick = randomiseLocations;
+    randomiseButton.innerHTML = 'Randomise Locations';
+    buttons.appendChild(randomiseButton);
+}
+
+
+function initialise() {
+	Info.appendTo("heading");
+    addButtons();
 }
 
 // -----------------------------------------

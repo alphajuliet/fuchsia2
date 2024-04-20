@@ -1,9 +1,11 @@
 // -----------------------------------------
 // HTML5 storage
 
+"use strict";
+
 function html5Storage() {
 	 
-	var prefix = "fuchsia2.";
+	let prefix = "fuchsia2.";
 	
 	// ---------------------------------------
 	this.isAvailable = function () {
@@ -48,7 +50,7 @@ function html5Storage() {
 		const len = localStorage.length;
 		if (len == 0)
 			fn2();
-		for (var i=0; i<len; i++) {
+		for (let i=0; i<len; i++) {
 			const k = localStorage.key(i);
 			const v = localStorage[k];
 			fn1(k, v);
@@ -59,7 +61,7 @@ function html5Storage() {
  	this.loadNotes = function () {
 		this.forEach(function (key, val) {
 			const note = new Note();
-			var v = val.split(',');
+			let v = val.split(',');
 			note.id = key.substr(prefix.length, key.length-1);
 			note.text = v.shift();
 			note.colour = decodeURIComponent(v.shift());
