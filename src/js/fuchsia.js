@@ -300,7 +300,8 @@ function randomColour() {
 function exportNotesText() {
     const dialog = document.getElementById('output');
     const dialogText = document.getElementById('dialogText');
-    const exportText = notes.map(note => `<p>${note.text}</p>`).join("");
+    const exportText = notes.map(note => `${note.text.trim()}`).join("<br/>").replace(/<br><br\/>/g, "<br/>");
+    // console.log(exportText);
     dialogText.innerHTML = exportText;
     dialog.showModal();
     let range = new Range();
