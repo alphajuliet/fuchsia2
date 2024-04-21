@@ -1,26 +1,28 @@
 // layouts.js
 
-const Layout = {
+class Layout {
 
-    noteWidth: 160,
-    noteHeight: 135,
+    static noteWidth = 160;
+    static noteHeight = 135;
 
-    randomInRange: (a, b) => Math.random() * (b - a) + a,
+    static randomInRange(a, b) {
+        return Math.random() * (b - a) + a;
+    }
 
-    randomLayout: (notes) => {
+    static randomLayout(notes) {
         const margin = 100;
         const width = window.innerWidth;
         const height = window.innerHeight;
         notes.forEach(note => {
-            note.left = Layout.randomInRange(margin, width - 2 * margin) + 'px';
-            note.top = Layout.randomInRange(margin, height - 2 * margin) + 'px';
+            note.left = this.randomInRange(margin, width - 2 * margin) + 'px';
+            note.top = this.randomInRange(margin, height - 2 * margin) + 'px';
             store.updateNote(note); 
         });
-    },
+    }
 
-    gridLayout: (notes) => {
-        outerMargin = 100;
-        innerMargin = 20;
+    static gridLayout(notes) {
+        const outerMargin = 100;
+        const innerMargin = 20;
         const width = window.innerWidth;
         const cols = Math.floor((width - (innerMargin * 2)) / (Layout.noteWidth + innerMargin));
         let row = 0;
@@ -35,13 +37,13 @@ const Layout = {
                 row++;
             }
         })
-    },
+    }
 
-    stackLayout: (notes) => {
-       randomOffset = 20;
+    static stackLayout(notes) {
+       const randomOffset = 20;
        notes.forEach(note => {
-           note.left = 150 + Layout.randomInRange(-randomOffset, randomOffset) + 'px';
-           note.top = 200 + Layout.randomInRange(-randomOffset, randomOffset) + 'px';
+           note.left = 150 + this.randomInRange(-randomOffset, randomOffset) + 'px';
+           note.top = 200 + this.randomInRange(-randomOffset, randomOffset) + 'px';
            store.updateNote(note);
        }) 
     }
