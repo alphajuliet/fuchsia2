@@ -62,20 +62,6 @@ function randomColour() {
     return colours[Math.floor(Math.random() * colours.length)];
 }
 
-function exportNotesText() {
-    const dialog = document.getElementById('output');
-    const dialogText = document.getElementById('dialogText');
-    const exportText = notes.map(note => `${note.text.trim()}`).join("<br/>").replace(/<br><br\/>/g, "<br/>");
-    // console.log(exportText);
-    dialogText.innerHTML = exportText;
-    dialog.showModal();
-    let range = new Range();
-    range.selectNode(dialogText);
-    let sel = window.getSelection();
-    sel.removeAllRanges();
-    sel.addRange(range);
-}
- 
 // -----------------------------------------
 function newNote() {
     let note = new Note();
@@ -90,14 +76,32 @@ function newNote() {
     notes.push(note);
 }
 
+function randomiseColours() {
+    notes.forEach(note => {
+        note.colour = randomColour();
+        note.save();
+    })
+}
+
+function exportNotesText() {
+    const dialog = document.getElementById('output');
+    const dialogText = document.getElementById('dialogText');
+    const exportText = notes.map(note => `${note.text.trim()}`).join("<br/>").replace(/<br><br\/>/g, "<br/>");
+    // console.log(exportText);
+    dialogText.innerHTML = exportText;
+    dialog.showModal();
+    let range = new Range();
+    range.selectNode(dialogText);
+    let sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+}
+ 
 function deleteAllNotes() {
 	store.deleteAllNotes();
     notes = [];
     document.getElementById('notes').innerHTML = '';
 }
-
-if (store.isAvailable)
-    addEventListener('load', loaded, false);
 
 function addButtonTo(target, text, onclick) {
     const button = document.createElement('button');
@@ -120,9 +124,13 @@ function addButtons() {
     addButtonTo(buttons, 'Random layout', () => Layout.randomLayout(notes));
     addButtonTo(buttons, 'Stack layout', () => Layout.stackLayout(notes));
     addButtonTo(buttons, 'Grid layout', () => Layout.gridLayout(notes));
+    addButtonTo(buttons, 'Random colours', randomiseColours);
     addButtonTo(buttons, 'Export text', exportNotesText);
 }
 
+// -----------------------------------------
+if (store.isAvailable)
+    addEventListener('load', loaded, false);
 
 function initialise() {
 	Info.appendTo("heading");
