@@ -8,8 +8,8 @@
 const Info = {
 	name: "fuchsia",
 	author: "AndrewJ", 
-	version: "2.0.2",
-	date: "2024-04-20",
+	version: "2.1.0",
+	date: "2024-04-21",
 	appendTo: function(tagName) {
 		const src = document.getElementById(tagName);
 		const title = document.createElement('span');
@@ -306,6 +306,9 @@ function exportNotesText() {
     dialog.showModal();
     let range = new Range();
     range.selectNode(dialogText);
+    let sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
 }
  
 // -----------------------------------------
