@@ -95,6 +95,13 @@ button:hover {
     text-align: right;
 }
 
+dialog {
+    background-color: #eeeeff;
+    box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.5);
+    max-height: 500px;
+    overflow: auto;
+}
+
 /* button {
 	font-size: 90%;
 	color: #999;	

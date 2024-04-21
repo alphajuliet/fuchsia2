@@ -291,6 +291,16 @@ function modifiedString(date) {
 function randomColour() {
     return colours[Math.floor(Math.random() * colours.length)];
 }
+
+function exportNotesText() {
+    const dialog = document.getElementById('output');
+    const dialogText = document.getElementById('dialogText');
+    const exportText = notes.map(note => `<p>${note.text}</p>`).join("");
+    dialogText.innerHTML = exportText;
+    dialog.showModal();
+    let range = new Range();
+    range.selectNode(dialogText);
+}
  
 // -----------------------------------------
 function newNote() {
@@ -315,14 +325,17 @@ function deleteAllNotes() {
 if (store.isAvailable)
     addEventListener('load', loaded, false);
 
+function randomInRange(a, b) {
+    return Math.random() * (b - a) + a;
+}
+
 function randomiseLocations() {
-    console.log(notes);
+    const margin = 100;
     const width = window.innerWidth;
     const height = window.innerHeight;
-    const margin = 100;
     for (let i = 0; i < notes.length; i++) {
-        notes[i].left = Math.round(margin + Math.random() * (width - margin)) + 'px';
-        notes[i].top = Math.round(margin + Math.random() * (height - margin)) + 'px';
+        notes[i].left = randomInRange(margin, width - 2*margin) + 'px';
+        notes[i].top = randomInRange(margin, height - 2*margin) + 'px';
     }
 }
 
@@ -345,6 +358,11 @@ function addButtons() {
     randomiseButton.onclick = randomiseLocations;
     randomiseButton.innerHTML = 'Randomise Locations';
     buttons.appendChild(randomiseButton);
+
+    const exportTextButton = document.createElement('button');
+    exportTextButton.onclick = exportNotesText;
+    exportTextButton.innerHTML = 'Export Text';
+    buttons.appendChild(exportTextButton);
 }
 
 
