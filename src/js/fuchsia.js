@@ -285,7 +285,12 @@ function loaded() {
  
 // -----------------------------------------
 function modifiedString(date) {
-    return 'Last Modified: ' + date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+    return 'Last Modified: ' + date.getFullYear() 
+        + '-' + (date.getMonth() + 1) 
+        + '-' + date.getDate() 
+        + ' ' + date.getHours() 
+        + ':' + date.getMinutes() 
+        + ':' + date.getSeconds();
 }
 
 function randomColour() {
@@ -325,20 +330,6 @@ function deleteAllNotes() {
 if (store.isAvailable)
     addEventListener('load', loaded, false);
 
-function randomInRange(a, b) {
-    return Math.random() * (b - a) + a;
-}
-
-function randomiseLocations() {
-    const margin = 100;
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    for (let i = 0; i < notes.length; i++) {
-        notes[i].left = randomInRange(margin, width - 2*margin) + 'px';
-        notes[i].top = randomInRange(margin, height - 2*margin) + 'px';
-    }
-}
-
 function addButtons() {
     const buttons = document.getElementById('buttons');
 
@@ -354,10 +345,20 @@ function addButtons() {
     clearNotesButton.innerHTML = 'Remove All';
     buttons.appendChild(clearNotesButton);
 
-    const randomiseButton = document.createElement('button');
-    randomiseButton.onclick = randomiseLocations;
-    randomiseButton.innerHTML = 'Randomise Locations';
-    buttons.appendChild(randomiseButton);
+    const randomLayoutButton = document.createElement('button');
+    randomLayoutButton.onclick = () => Layout.randomLayout(notes);
+    randomLayoutButton.innerHTML = 'Random layout';
+    buttons.appendChild(randomLayoutButton);
+
+    const gridLayoutButton = document.createElement('button');
+    gridLayoutButton.onclick = () => Layout.gridLayout(notes);
+    gridLayoutButton.innerHTML = 'Grid layout';
+    buttons.appendChild(gridLayoutButton);
+
+    const stackLayoutButton = document.createElement('button');
+    stackLayoutButton.onclick = () => Layout.stackLayout(notes);
+    stackLayoutButton.innerHTML = 'Stack layout';
+    buttons.appendChild(stackLayoutButton);
 
     const exportTextButton = document.createElement('button');
     exportTextButton.onclick = exportNotesText;
