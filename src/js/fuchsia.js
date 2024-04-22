@@ -36,11 +36,11 @@ let highestZ = 0;
 let highestId = 0; // Global id counter
 
 const colours = [
-    '#ffffff', '#aaaaaa', '#cccccc', 		   // monochromes
-    '#ffcccc', '#ffccff', '#ddaaaa', '#cc8888', '#ff88cc', // reds
-    '#ff8844', '#ffff88', '#ffcc44', '#f0e68c', '#f2c249', // browns/oranges/yellows
-    '#aaffaa', '#88ff88', '#77cc77', '#8bae43', '#77ccaa', // greens
-    '#bbddff', '#88ffcc', '#ccccff', '#aaffff', '#88aacc'  // blues
+    '#eeeeee', '#cccccc', // greys
+    '#ff9999', '#ffccff', '#ddaaaa', '#cc9966', '#ff99cc', '#cc9900', // reds/browns
+    '#ff9966', '#ffff00', '#ff9900', '#ffcc00', '#ffcc99', // oranges/yellows
+    '#ccffcc', '#99cccc', '#99cc00', '#99ffcc', '#66ff33', // greens
+    '#66ccff', '#bbddff', '#cc99ff', '#ccccff', '#99ffff', '#cc99cc', '#99ccff', '#ff99ff', '#ff9999'  // blues/purples/pinks
 ];
 
 // -----------------------------------------
