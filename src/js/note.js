@@ -83,19 +83,13 @@ Note.prototype = {
 //    set bgcolor(c) { this.style.backgroundColor = c; },
  
     delete: function(event) {
+        // Remove from the store
         this.cancelPendingSave();
- 
-        let note = this;
-        store.deleteNote(note);
-
-        let duration = event.shiftKey ? 2 : .25;
-        this.note.style.webkitTransition = '-webkit-transform ' + duration + 's ease-in, opacity ' + duration + 's ease-in';
-        this.note.offsetTop; // Force style recalc
-        this.note.style.webkitTransformOrigin = "0 0";
-        this.note.style.webkitTransform = 'skew(30deg, 0deg) scale(0)';
-        this.note.style.opacity = '0';
- 
-        setTimeout(function() { document.body.removeChild(self.note) }, duration * 1000);
+        store.deleteNote(this);
+        // Remove the note from the DOM
+        this.note.remove();
+        // Remove from the notes array
+        notes = notes.filter(note => note != this);
     },
 
     changeColour: function(event) {
@@ -171,7 +165,9 @@ Note.prototype = {
  
     onNoteClick: function(e) {
         this.editField.focus();
-        getSelection().collapseToEnd();
+        const sel = getSelection();
+        if (sel.baseNode) 
+            sel.collapseToEnd();
     },
  
     onKeyUp: function() {
