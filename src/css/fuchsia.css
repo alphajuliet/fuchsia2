@@ -22,10 +22,14 @@ label, input[type="button"], input[type="submit"], input[type="image"], button {
 	padding: 0px 5px;
 	margin: 0px 10px 0 0;
     box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.5);	
+    border-radius: 2px;
 }
 
 #buttons button {
     margin: 0 5px 0 0;
+    padding: 4px 8px;
+    border: 1px solid #888;
+    border-radius: 2px;
 }
 
 button:hover {
@@ -40,6 +44,8 @@ button:hover {
     padding: 10px;
     position: absolute;
     box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
+    z-index: auto;
 }
 
 .edit {
@@ -49,12 +55,12 @@ button:hover {
     overflow: auto;
 }
 
-.note:hover .closebutton,
+.note:hover .deleteButton,
 .note:hover .colourButton {
     display: block;
 }
  
-.closebutton {
+.deleteButton {
     display: none;
     background-image: url(../images/deleteButton.png);
     height: 30px;
@@ -64,19 +70,19 @@ button:hover {
     width: 30px;
 }
  
-.closebutton:active {
+.deleteButton:active {
     background-image: url(../images/deleteButtonPressed.png);
 }
 
 .colourButton {
     display: none;
-    font-size: 7pt;
-    text-align: center;
-	height: 20px;
-	width: 20px;
+    background-image: url(../images/colours.png);
+	height: 24px;
+	width: 24px;
 	position: absolute;
-	right: 10px;
-	bottom: 10px;
+	left: 5px;
+	bottom: 5px;
+    border: none;
 }
 
 .edit {

@@ -14,12 +14,7 @@ function Note() {
     supportsTouch && note.addEventListener('touchcancel', function (e) { return self.onTouchEnd(e) }, false);
     this.note = note;
  
-    const close = document.createElement('div');
-    close.className = 'closebutton';
-    close.addEventListener('click', function(event) { return self.close(event) }, false);
-    note.appendChild(close);
- 
-    const edit = document.createElement('div');
+   const edit = document.createElement('div');
     edit.className = 'edit';
     edit.setAttribute('contentEditable', true);
     edit.addEventListener('keyup', function() { return self.onKeyUp() }, false);
@@ -37,10 +32,13 @@ function Note() {
     // note.appendChild(ts);
     this.lastModified = ts;
  
+    const deleteButton = document.createElement('div');
+    deleteButton.className = 'deleteButton';
+    deleteButton.addEventListener('click', function(event) { return self.delete(event) }, false);
+    note.appendChild(deleteButton);
+ 
     const colourButton = document.createElement('button');
     colourButton.className = 'colourButton';
-    colourButton.setAttribute('type', 'button');
-    colourButton.innerText = 'C';
     colourButton.addEventListener('click', function(event) { return self.changeColour(event) }, false);
     note.appendChild(colourButton);
     
@@ -84,7 +82,7 @@ Note.prototype = {
 //    get bgcolor() { return this.style.backgroundColor; },
 //    set bgcolor(c) { this.style.backgroundColor = c; },
  
-    close: function(event) {
+    delete: function(event) {
         this.cancelPendingSave();
  
         let note = this;
@@ -97,7 +95,6 @@ Note.prototype = {
         this.note.style.webkitTransform = 'skew(30deg, 0deg) scale(0)';
         this.note.style.opacity = '0';
  
-        let self = this;
         setTimeout(function() { document.body.removeChild(self.note) }, duration * 1000);
     },
 
