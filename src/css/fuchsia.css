@@ -8,6 +8,7 @@
 
 body {
     font-family: Inter, 'Helvetica Neue', Lucida Grande, sans-serif;
+    margin: 20pt;
 }
  
 label, input[type="button"], input[type="submit"], input[type="image"], button { 

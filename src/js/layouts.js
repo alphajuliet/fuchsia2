@@ -21,8 +21,8 @@ class Layout {
     }
 
     static gridLayout(notes) {
-        const outerMargin = 100;
-        const innerMargin = 20;
+        const outerMargin = 120;
+        const innerMargin = 25;
         const width = window.innerWidth;
         const cols = Math.floor((width - (innerMargin * 2)) / (Layout.noteWidth + innerMargin));
         let row = 0;
