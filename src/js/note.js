@@ -34,11 +34,13 @@ function Note() {
  
     const deleteButton = document.createElement('div');
     deleteButton.className = 'deleteButton';
+    deleteButton.title = "Delete this note"
     deleteButton.addEventListener('click', function(event) { return self.delete(event) }, false);
     note.appendChild(deleteButton);
  
     const colourButton = document.createElement('button');
     colourButton.className = 'colourButton';
+    colourButton.title = "Randomise the note colour";
     colourButton.addEventListener('click', function(event) { return self.changeColour(event) }, false);
     note.appendChild(colourButton);
     
