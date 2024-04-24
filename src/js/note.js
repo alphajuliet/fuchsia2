@@ -14,15 +14,17 @@ function Note() {
     supportsTouch && note.addEventListener('touchcancel', function (e) { return self.onTouchEnd(e) }, false);
     this.note = note;
  
-   const edit = document.createElement('div');
+    const edit = document.createElement('div');
     edit.className = 'edit';
     edit.setAttribute('contentEditable', true);
     edit.addEventListener('keyup', function() { return self.onKeyUp() }, false);
-    edit.addEventListener("paste", function(e) { 
-        e.preventDefault(); 
-        const text = e.clipboardData.getData("text/plain"); 
-        document.execCommand("insertHTML", false, text); 
-    }, false);
+    edit.addEventListener('paste', function() { return self.onPaste() }, false);
+    // Remove deprecated call
+    // edit.addEventListener("paste", function(e) { 
+    //     e.preventDefault(); 
+    //     const text = e.clipboardData.getData("text/plain"); 
+    //     document.execCommand("insertHTML", false, text); 
+    // }, false);
     note.appendChild(edit);
     this.editField = edit;
  
