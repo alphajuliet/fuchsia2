@@ -21,7 +21,7 @@ class Layout {
     }
 
     static gridLayout(notes) {
-        const outerMargin = 120;
+        const topMargin = 150;
         const innerMargin = 25;
         const width = window.innerWidth;
         const cols = Math.floor((width - (innerMargin * 2)) / (Layout.noteWidth + innerMargin));
@@ -29,7 +29,7 @@ class Layout {
         let col = 0;
         notes.forEach(note => {
             note.left = (col * (Layout.noteWidth + innerMargin)) + innerMargin + 'px';
-            note.top = outerMargin + (row * (Layout.noteHeight + innerMargin)) + innerMargin + 'px';
+            note.top = topMargin + (row * (Layout.noteHeight + innerMargin)) + innerMargin + 'px';
             store.updateNote(note);
             col++;
             if (col == cols) {

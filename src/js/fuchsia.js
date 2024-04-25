@@ -110,6 +110,29 @@ function addButtonTo(target, text, onclick) {
     target.appendChild(button);
 }
 
+function divOption ( text, onclick ) {
+    const div = document.createElement('div');
+    div.innerHTML = text;
+    div.onclick = onclick;
+    return div;
+}
+
+function addLayoutDropdownTo(target) {
+    const dropdown = document.createElement('button');
+    dropdown.className = 'dropdown';
+    dropdown.innerHTML = 'Layout ∨';
+    const options = document.createElement('div');
+    options.className = 'options';
+    options.appendChild(divOption('Random', () => Layout.randomLayout(notes)));
+    options.appendChild(divOption('Stack', () => Layout.stackLayout(notes)));
+    options.appendChild(divOption('Grid', () => Layout.gridLayout(notes)));
+    dropdown.appendChild(options);
+    target.appendChild(dropdown);
+    dropdown.onclick = function() {
+        dropdown.classList.toggle("active")
+    }
+}
+
 function addButtons() {
     const buttons = document.getElementById('buttons');
 
@@ -121,9 +144,7 @@ function addButtons() {
     buttons.appendChild(newNoteButton);
 
     addButtonTo(buttons, 'Delete all', deleteAllNotes);
-    addButtonTo(buttons, 'Random layout', () => Layout.randomLayout(notes));
-    addButtonTo(buttons, 'Stack layout', () => Layout.stackLayout(notes));
-    addButtonTo(buttons, 'Grid layout', () => Layout.gridLayout(notes));
+    addLayoutDropdownTo(buttons);
     addButtonTo(buttons, 'Random colours', randomiseColours);
     addButtonTo(buttons, 'Export text', exportNotesText);
 }

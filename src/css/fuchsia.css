@@ -27,10 +27,12 @@ label, input[type="button"], input[type="submit"], input[type="image"], button {
 }
 
 #buttons button {
+    position: relative;
     margin: 0 5px 0 0;
     padding: 4px 8px;
     border: 1px solid #888;
     border-radius: 2px;
+    z-index: 10;
 }
 
 button:hover {
@@ -46,7 +48,7 @@ button:hover {
     position: absolute;
     box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.5);
     border-radius: 4px;
-    z-index: auto;
+    z-index: 0;
 }
 
 .edit {
@@ -111,6 +113,37 @@ dialog {
     min-width: 250px;
     max-width: 400px;
     overflow: auto;
+}
+
+.dropdown {
+    position: relative;
+    margin: 0 5px 0 0;
+    padding: 4px 8px;
+    border: 1px solid #888;
+    border-radius: 2px;
+    z-index: 10;
+}
+
+.dropdown .options {
+    position: absolute;
+    text-align: left;
+    margin-top: 5pt;
+    overflow: hidden;
+    display: none;
+}
+
+.dropdown.active .options {
+    display: block;
+}
+
+.dropdown .options div {
+    margin: 0pt 5px 0pt 0;
+    padding: 4px 8px;
+    cursor: pointer;
+}
+
+.dropdown .options div:hover {
+    background: var(--selection-colour);
 }
 
 /* The End */
