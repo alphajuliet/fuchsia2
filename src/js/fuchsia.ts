@@ -72,8 +72,8 @@ function newNote() {
     note.zIndex = ++highestZ;
     note.colour = randomColour();
     note.saveAsNew();
-    note.note.getElementsByClassName('edit')[0].focus();
     notes.push(note);
+    note.note.querySelector<HTMLInputElement>('.edit')!.focus();
 }
 
 function randomiseColours() {
@@ -84,7 +84,7 @@ function randomiseColours() {
 }
 
 function exportNotesText() {
-    const dialog = document.getElementById('output');
+    const dialog = document.getElementById('output') as HTMLDialogElement;
     const dialogText = document.getElementById('dialogText');
     const exportText = notes.map(note => `${note.text.trim()}`).join("<br/>").replace(/<br><br\/>/g, "<br/>");
     // console.log(exportText);
