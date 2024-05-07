@@ -65,14 +65,14 @@ class Html5Storage {
 				note.text = v.shift();
 				note.colour = decodeURIComponent(v.shift());
 				note.timestamp = parseInt(v.shift());
-				note.left = parseInt(v.shift());
-				note.top = parseInt(v.shift());
-				note.zIndex = parseInt(v.shift());
+				note.left = parseInt(v.shift()).toString();
+				note.top = parseInt(v.shift()).toString();
+				note.zIndex = parseInt(v.shift()).toString();
 
 				if (note.id > highestId)
 					highestId = note.id;
-				if (note.zIndex > highestZ)
-					highestZ = note.zIndex;
+				if (parseInt(note.zIndex) > highestZ)
+					highestZ = parseInt(note.zIndex);
 				notes.push(note);
 			}
 		}, () => {

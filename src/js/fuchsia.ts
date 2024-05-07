@@ -69,11 +69,11 @@ function newNote() {
     note.timestamp = new Date().getTime();
     note.left = Math.round(Math.random() * 400) + 'px';
     note.top = Math.round(Math.random() * 500) + 'px';
-    note.zIndex = ++highestZ;
+    note.zIndex = (++Note.highestZ).toString();
     note.colour = randomColour();
     note.saveAsNew();
     notes.push(note);
-    note.note.querySelector<HTMLInputElement>('.edit')!.focus();
+    note.noteDiv.querySelector<HTMLInputElement>('.edit')!.focus();
 }
 
 function randomiseColours() {
