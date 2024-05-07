@@ -28,7 +28,7 @@ const debug = true;
 // -----------------------------------------
 // Storage options
 let notes = [];
-const store = new html5Storage();
+const store = new Html5Storage();
 
 // -----------------------------------------
 let captured = null;
