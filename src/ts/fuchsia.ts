@@ -8,8 +8,8 @@
 const Info = {
 	name: "fuchsia",
 	author: "AndrewJ", 
-	version: "2.1.1",
-	date: "2024-04-22",
+	version: "2.2.0",
+	date: "2024-05-07",
 	appendTo: function(tagName) {
 		const src = document.getElementById(tagName);
 		const title = document.createElement('span');
