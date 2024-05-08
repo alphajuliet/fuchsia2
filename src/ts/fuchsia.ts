@@ -2,26 +2,26 @@
 // fuchsia.js
 // Based on http://net.tutsplus.com/articles/news/create-a-sticky-note-effect-in-5-easy-steps-with-css3-and-html5/
 // -----------------------------------------
-"use strict";
 
 // Object: info
-const Info = {
-	name: "fuchsia",
-	author: "AndrewJ", 
-	version: "2.2.0",
-	date: "2024-05-07",
-	appendTo: function(tagName) {
+class Info {
+    public static appName = "fuchsia";
+    public static author = "AndrewJ"; 
+    public static version = "2.2.0";
+    public static date = "2024-05-07";
+	
+	public static appendTo(tagName: string): void {
 		const src = document.getElementById(tagName);
 		const title = document.createElement('span');
 		title.className = 'title';
-		title.appendChild(document.createTextNode(this.name));
+		title.appendChild(document.createTextNode(Info.appName));
 		const str = document.createElement('p');
 		str.appendChild(title);
-		str.appendChild(document.createTextNode(this.version));
+		str.appendChild(document.createTextNode(Info.version));
 		src.appendChild(str);
-	},
+	}
 }
-
+const info = new Info();
 const supportsTouch = 'createTouch' in document;
 const debug = true;
 
