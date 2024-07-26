@@ -11,6 +11,8 @@ class Note {
     private note: HTMLDivElement;
     private editField: HTMLDivElement;
     private lastModified: HTMLDivElement;
+    private colorPicker: HTMLDivElement;
+    private colorDisplay: HTMLDivElement;
     private mouseMoveHandler: (e: MouseEvent) => boolean;
     private mouseUpHandler: (e: MouseEvent) => boolean;
     private touchMoveHandler: (e: TouchEvent) => boolean;
@@ -92,11 +94,38 @@ class Note {
         deleteButton.addEventListener('click', (event) => this.delete(event), false);
         note.appendChild(deleteButton);
 
-        const colourButton = document.createElement('button');
-        colourButton.className = 'colourButton';
-        colourButton.title = "Randomise the note colour";
-        colourButton.addEventListener('click', (event) => this.changeColour(event), false);
-        note.appendChild(colourButton);
+        // const colourButton = document.createElement('button');
+        // colourButton.className = 'colourButton';
+        // colourButton.title = "Randomise the note colour";
+        // colourButton.addEventListener('click', (event) => this.changeColour(event), false);
+        // note.appendChild(colourButton);
+
+        // Create the color picker container
+        this.colorPicker = document.createElement('div');
+        this.colorPicker.className = 'colorPicker';
+        this.colorPicker.title = "Choose note color";
+
+        // Create the color display
+        this.colorDisplay = document.createElement('div');
+        this.colorDisplay.className = 'colorDisplay';
+        this.colorDisplay.style.backgroundColor = this.colour;
+        this.colorPicker.appendChild(this.colorDisplay);
+
+        // Create the color options container
+        const colorOptions = document.createElement('div');
+        colorOptions.className = 'colorOptions';
+
+        // Add color options
+        colours.forEach((color) => {
+            const option = document.createElement('div');
+            option.className = 'colorOption';
+            option.style.backgroundColor = color;
+            option.addEventListener('click', () => this.changeColour(color));
+            colorOptions.appendChild(option);
+        });
+
+        this.colorPicker.appendChild(colorOptions);
+        note.appendChild(this.colorPicker);
 
         document.getElementById('notes').appendChild(note);
     }
@@ -111,8 +140,10 @@ class Note {
         notes = notes.filter(note => note != this);
     }
 
-    public changeColour(event: Event): void {
-        this.colour = randomColour();
+    public changeColour(color: string): void {
+        this.colour = color;
+        // this.colorDisplay.style.backgroundColor = color;
+        this.saveSoon();
     }
 
     public saveSoon(): void {

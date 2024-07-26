@@ -7,8 +7,8 @@
 class Info {
     public static appName = "fuchsia";
     public static author = "AndrewJ"; 
-    public static version = "2.2.0";
-    public static date = "2024-05-07";
+    public static version = "2.3.0";
+    public static date = "2024-07-26";
 	
 	public static appendTo(tagName: string): void {
 		const src = document.getElementById(tagName);
