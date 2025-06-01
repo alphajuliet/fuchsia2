@@ -13,6 +13,7 @@ class Note {
     private lastModified: HTMLDivElement;
     private colorPicker: HTMLDivElement;
     private colorDisplay: HTMLDivElement;
+    private deleteButton: HTMLDivElement;
     private mouseMoveHandler: (e: MouseEvent) => boolean;
     private mouseUpHandler: (e: MouseEvent) => boolean;
     private touchMoveHandler: (e: TouchEvent) => boolean;
@@ -88,57 +89,32 @@ class Note {
         // note.appendChild(ts);
         this.lastModified = ts;
 
-        const deleteButton = document.createElement('div');
-        deleteButton.className = 'deleteButton';
-        deleteButton.title = "Delete this note";
-        deleteButton.setAttribute('data-note-id', this.id.toString());
-        deleteButton.addEventListener('click', (event) => this.delete(event), false);
-        deleteButton.style.display = 'none'; // Initially hidden
+        // Create the delete button
+        this.deleteButton = document.createElement('div');
+        this.deleteButton.className = 'deleteButton';
+        this.deleteButton.title = "Delete this note";
+        this.deleteButton.setAttribute('data-note-id', this.id.toString());
+        this.deleteButton.addEventListener('click', (event) => this.delete(event), false);
+        this.deleteButton.style.display = 'none'; // Initially hidden
         
         // Position the delete button relative to the note
         const updateDeleteButtonPosition = () => {
-            deleteButton.style.left = (parseInt(this.left) - 15) + 'px';
-            deleteButton.style.top = (parseInt(this.top) - 15) + 'px';
+            this.deleteButton.style.left = (parseInt(this.left) - 15) + 'px';
+            this.deleteButton.style.top = (parseInt(this.top) - 15) + 'px';
         };
         updateDeleteButtonPosition();
         
-        // Create the color picker container
-        this.colorPicker = document.createElement('div');
-        this.colorPicker.className = 'colorPicker';
-        this.colorPicker.title = "Choose note color";
-        this.colorPicker.style.display = 'none'; // Initially hidden
-        
-        // Position the color picker relative to the note
+        // Create and position the color picker
+        this.colorPicker = this.createColorPicker();
         const updateColorPickerPosition = () => {
             this.colorPicker.style.left = (parseInt(this.left) - 10) + 'px';
             this.colorPicker.style.top = (parseInt(this.top) + parseInt(this.note.style.height || '125') - 10) + 'px';
         };
         updateColorPickerPosition();
-
-        // Create the color display
-        this.colorDisplay = document.createElement('div');
-        this.colorDisplay.className = 'colorDisplay';
-        this.colorDisplay.style.backgroundColor = this.colour;
-        this.colorPicker.appendChild(this.colorDisplay);
-
-        // Create the color options container
-        const colorOptions = document.createElement('div');
-        colorOptions.className = 'colorOptions';
-
-        // Add color options
-        colours.forEach((colour) => {
-            const option = document.createElement('div');
-            option.className = 'colorOption';
-            option.style.backgroundColor = colour;
-            option.addEventListener('click', () => this.changeColour(colour));
-            colorOptions.appendChild(option);
-        });
-
-        this.colorPicker.appendChild(colorOptions);
         
         // Add mouseover/mouseout events to show/hide the UI elements
         note.addEventListener('mouseover', () => {
-            deleteButton.style.display = 'block';
+            this.deleteButton.style.display = 'block';
             this.colorPicker.style.display = 'block';
             updateDeleteButtonPosition();
             updateColorPickerPosition();
@@ -148,16 +124,16 @@ class Note {
             // Check if the mouse is still over the note or its UI elements
             const relatedTarget = e.relatedTarget as Node;
             if (!note.contains(relatedTarget) && 
-                relatedTarget !== deleteButton && 
+                relatedTarget !== this.deleteButton && 
                 relatedTarget !== this.colorPicker && 
                 !this.colorPicker.contains(relatedTarget)) {
-                deleteButton.style.display = 'none';
+                this.deleteButton.style.display = 'none';
                 this.colorPicker.style.display = 'none';
             }
         });
         
         // Add the UI elements to the document body
-        document.getElementById('notes').appendChild(deleteButton);
+        document.getElementById('notes').appendChild(this.deleteButton);
         document.getElementById('notes').appendChild(this.colorPicker);
 
         document.getElementById('notes').appendChild(note);
@@ -167,8 +143,20 @@ class Note {
         // Remove from the store
         this.cancelPendingSave();
         store.deleteNote(this);
+        
+        // Remove the delete button from the DOM
+        if (this.deleteButton) {
+            this.deleteButton.remove();
+        }
+        
+        // Remove the color picker from the DOM
+        if (this.colorPicker) {
+            this.colorPicker.remove();
+        }
+        
         // Remove the note from the DOM
         this.note.remove();
+        
         // Remove from the notes array
         notes = notes.filter(note => note != this);
     }
@@ -235,10 +223,9 @@ class Note {
         this.top = (e.clientY - this.startY) + 'px';
         
         // Update positions of the UI elements
-        const deleteButton = document.querySelector(`.deleteButton[data-note-id="${this.id}"]`) as HTMLElement;
-        if (deleteButton && deleteButton.style.display !== 'none') {
-            deleteButton.style.left = (parseInt(this.left) - 15) + 'px';
-            deleteButton.style.top = (parseInt(this.top) - 15) + 'px';
+        if (this.deleteButton && this.deleteButton.style.display !== 'none') {
+            this.deleteButton.style.left = (parseInt(this.left) - 15) + 'px';
+            this.deleteButton.style.top = (parseInt(this.top) - 15) + 'px';
         }
         
         if (this.colorPicker && this.colorPicker.style.display !== 'none') {
@@ -308,5 +295,36 @@ class Note {
         e.preventDefault();
         const text = e.clipboardData.getData('text/plain');
         document.execCommand('insertHTML', false, text);
+    }
+    
+    private createColorPicker(): HTMLDivElement {
+        // Create the color picker container
+        const colorPicker = document.createElement('div');
+        colorPicker.className = 'colorPicker';
+        colorPicker.title = "Choose note color";
+        colorPicker.style.display = 'none'; // Initially hidden
+        
+        // Create the color display
+        this.colorDisplay = document.createElement('div');
+        this.colorDisplay.className = 'colorDisplay';
+        this.colorDisplay.style.backgroundColor = this.colour;
+        colorPicker.appendChild(this.colorDisplay);
+
+        // Create the color options container
+        const colorOptions = document.createElement('div');
+        colorOptions.className = 'colorOptions';
+
+        // Add color options
+        colours.forEach((colour) => {
+            const option = document.createElement('div');
+            option.className = 'colorOption';
+            option.style.backgroundColor = colour;
+            option.addEventListener('click', () => this.changeColour(colour));
+            colorOptions.appendChild(option);
+        });
+
+        colorPicker.appendChild(colorOptions);
+        
+        return colorPicker;
     }
 }

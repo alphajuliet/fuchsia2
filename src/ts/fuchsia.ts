@@ -157,6 +157,7 @@ function importNotesText() {
 function deleteAllNotes() {
 	store.deleteAllNotes();
     notes = [];
+    // Clear the notes container which will remove all notes, delete buttons, and color pickers
     document.getElementById('notes').innerHTML = '';
 }
 
