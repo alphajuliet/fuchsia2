@@ -15,36 +15,36 @@ class Html5Storage {
 	}
 	
 	// ---------------------------------------
-	public initialise() {
+	public initialise(): void {
 		this.loadNotes();
 	}
 	
 	// ---------------------------------------
-	public createNote(note: Note) {
+	public createNote(note: Note): void {
 		const encodedColour = encodeURIComponent(note.colour);
 		localStorage[this.prefix + note.id] = [note.text, encodedColour, note.timestamp, note.left, note.top, note.zIndex];
 	}
 	
 	// ---------------------------------------
-	public updateNote(note: Note) {
+	public updateNote(note: Note): void {
 		const encodedColour = encodeURIComponent(note.colour);
 		localStorage[this.prefix + note.id] = [note.text, encodedColour, note.timestamp, note.left, note.top, note.zIndex];
 	}
 	
 	// ---------------------------------------
-	public deleteNote(note: Note) {
+	public deleteNote(note: Note): void {
 		localStorage.removeItem(this.prefix + note.id);
 	}
 	
 	// ---------------------------------------
-	public deleteAllNotes() {
+	public deleteAllNotes(): void {
 		localStorage.clear();
 	}
 	
 	// ---------------------------------------
 	// Iterate over the local store. 
 	// Execute fn1 for each key-value pair, or execute fn2 if none.
-	public forEach(fn1: (key: string, val: string) => void, fn2: () => void) {
+	public forEach(fn1: (key: string, val: string) => void, fn2: () => void): void {
 		const len = localStorage.length;
 		if (len == 0)
 			fn2();
@@ -56,7 +56,7 @@ class Html5Storage {
 	}
 	
 	// ---------------------------------------
-	private loadNotes() {
+	private loadNotes(): void {
 		this.forEach((key, val) => {
 			if (key.startsWith(this.prefix)) {
 				const note = new Note();
@@ -65,8 +65,8 @@ class Html5Storage {
 				note.text = v.shift();
 				note.colour = decodeURIComponent(v.shift());
 				note.timestamp = parseInt(v.shift());
-				note.left = parseInt(v.shift()).toString();
-				note.top = parseInt(v.shift()).toString();
+				note.left = parseInt(v.shift()).toString() + 'px';
+				note.top = parseInt(v.shift()).toString() + 'px';
 				note.zIndex = parseInt(v.shift()).toString();
 
 				if (note.id > highestId)
@@ -82,7 +82,7 @@ class Html5Storage {
 	
 	// ---------------------------------------
 	constructor() {
-		if (!this.isAvailable)
+		if (!this.isAvailable())
 			alert("Local storage not available. Please use an HTML5 compatible browser.");
 	}
 }

@@ -44,26 +44,21 @@ const colours = [
 ];
 
 // -----------------------------------------
-function loaded() {
+function loaded(): void {
 	store.initialise();
 }
  
 // -----------------------------------------
-function modifiedString(date) {
-    return 'Last Modified: ' + date.getFullYear() 
-        + '-' + (date.getMonth() + 1) 
-        + '-' + date.getDate() 
-        + ' ' + date.getHours() 
-        + ':' + date.getMinutes() 
-        + ':' + date.getSeconds();
+function modifiedString(date: Date): string {
+    return `Last Modified: ${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
 }
 
-function randomColour() {
+function randomColour(): string {
     return colours[Math.floor(Math.random() * colours.length)];
 }
 
 // -----------------------------------------
-function newNote() {
+function newNote(): void {
     let note = new Note();
     note.id = ++highestId;
     note.timestamp = new Date().getTime();
@@ -76,14 +71,14 @@ function newNote() {
     note.noteDiv.querySelector<HTMLInputElement>('.edit')!.focus();
 }
 
-function randomiseColours() {
+function randomiseColours(): void {
     notes.forEach(note => {
         note.colour = randomColour();
         note.save();
     })
 }
 
-function exportNotesText() {
+function exportNotesText(): void {
     const dialog = document.getElementById('output') as HTMLDialogElement;
     const dialogText = document.getElementById('dialogText');
     const exportText = notes.map(note => `${note.text.trim()}`).join("<br/>").replace(/<br><br\/>/g, "<br/>");
@@ -97,7 +92,7 @@ function exportNotesText() {
     sel.addRange(range);
 }
 
-function importNotesText() {
+function importNotesText(): void {
     const dialog = document.createElement('dialog') as HTMLDialogElement;
     dialog.id = 'import-dialog';
     
@@ -154,28 +149,67 @@ function importNotesText() {
     dialog.showModal();
 }
  
-function deleteAllNotes() {
+function confirmDeleteAllNotes(): void {
+    const dialog = document.createElement('dialog') as HTMLDialogElement;
+    dialog.id = 'confirm-delete-dialog';
+    
+    const heading = document.createElement('h3');
+    heading.textContent = 'Confirm Delete All Notes';
+    dialog.appendChild(heading);
+    
+    const message = document.createElement('p');
+    message.textContent = 'Are you sure you want to delete all notes? This action cannot be undone.';
+    dialog.appendChild(message);
+    
+    const buttonContainer = document.createElement('div');
+    buttonContainer.style.marginTop = '10px';
+    
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Delete All';
+    deleteButton.style.backgroundColor = '#ff6666';
+    deleteButton.onclick = () => {
+        dialog.close();
+        document.body.removeChild(dialog);
+        deleteAllNotes();
+    };
+    buttonContainer.appendChild(deleteButton);
+    
+    const cancelButton = document.createElement('button');
+    cancelButton.textContent = 'Cancel';
+    cancelButton.style.marginLeft = '10px';
+    cancelButton.onclick = () => {
+        dialog.close();
+        document.body.removeChild(dialog);
+    };
+    buttonContainer.appendChild(cancelButton);
+    
+    dialog.appendChild(buttonContainer);
+    document.body.appendChild(dialog);
+    dialog.showModal();
+}
+
+function deleteAllNotes(): void {
 	store.deleteAllNotes();
     notes = [];
     // Clear the notes container which will remove all notes, delete buttons, and color pickers
     document.getElementById('notes').innerHTML = '';
 }
 
-function addButtonTo(target, text, onclick) {
+function addButtonTo(target: HTMLElement, text: string, onclick: () => void): void {
     const button = document.createElement('button');
     button.innerHTML = text;
     button.onclick = onclick;
     target.appendChild(button);
 }
 
-function divOption ( text, onclick ) {
+function divOption(text: string, onclick: () => void): HTMLElement {
     const div = document.createElement('div');
     div.innerHTML = text;
     div.onclick = onclick;
     return div;
 }
 
-function addLayoutDropdownTo(target) {
+function addLayoutDropdownTo(target: HTMLElement): void {
     const dropdown = document.createElement('button');
     dropdown.className = 'dropdown';
     dropdown.innerHTML = 'Layout ∨';
@@ -191,7 +225,7 @@ function addLayoutDropdownTo(target) {
     }
 }
 
-function addButtons() {
+function addButtons(): void {
     const buttons = document.getElementById('buttons');
 
     const newNoteButton = document.createElement('button');
@@ -201,7 +235,7 @@ function addButtons() {
     newNoteButton.disabled = !store.isAvailable;
     buttons.appendChild(newNoteButton);
 
-    addButtonTo(buttons, 'Delete all', deleteAllNotes);
+    addButtonTo(buttons, 'Delete all', confirmDeleteAllNotes);
     addLayoutDropdownTo(buttons);
     addButtonTo(buttons, 'Random colours', randomiseColours);
     addButtonTo(buttons, 'Export text', exportNotesText);
@@ -212,7 +246,7 @@ function addButtons() {
 if (store.isAvailable)
     addEventListener('load', loaded, false);
 
-function initialise() {
+function initialise(): void {
 	Info.appendTo("heading");
     addButtons();
 }
