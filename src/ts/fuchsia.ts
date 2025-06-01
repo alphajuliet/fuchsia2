@@ -96,6 +96,63 @@ function exportNotesText() {
     sel.removeAllRanges();
     sel.addRange(range);
 }
+
+function importNotesText() {
+    const dialog = document.createElement('dialog') as HTMLDialogElement;
+    dialog.id = 'import-dialog';
+    
+    const heading = document.createElement('h3');
+    heading.textContent = 'Import Notes';
+    dialog.appendChild(heading);
+    
+    const textarea = document.createElement('textarea');
+    textarea.rows = 10;
+    textarea.cols = 50;
+    textarea.placeholder = 'Enter text here. Each line will become a new note.';
+    dialog.appendChild(textarea);
+    
+    const buttonContainer = document.createElement('div');
+    buttonContainer.style.marginTop = '10px';
+    
+    const importButton = document.createElement('button');
+    importButton.textContent = 'Import';
+    importButton.onclick = () => {
+        const text = textarea.value;
+        const lines = text.split('\n');
+        
+        lines.forEach(line => {
+            if (line.trim()) {
+                let note = new Note();
+                note.id = ++highestId;
+                note.timestamp = new Date().getTime();
+                note.left = Math.round(Math.random() * 400) + 'px';
+                note.top = Math.round(Math.random() * 500) + 'px';
+                note.zIndex = (++Note.highestZ).toString();
+                note.colour = randomColour();
+                note.text = line.trim();
+                note.saveAsNew();
+                notes.push(note);
+            }
+        });
+        
+        dialog.close();
+        document.body.removeChild(dialog);
+    };
+    buttonContainer.appendChild(importButton);
+    
+    const cancelButton = document.createElement('button');
+    cancelButton.textContent = 'Cancel';
+    cancelButton.style.marginLeft = '10px';
+    cancelButton.onclick = () => {
+        dialog.close();
+        document.body.removeChild(dialog);
+    };
+    buttonContainer.appendChild(cancelButton);
+    
+    dialog.appendChild(buttonContainer);
+    document.body.appendChild(dialog);
+    dialog.showModal();
+}
  
 function deleteAllNotes() {
 	store.deleteAllNotes();
@@ -147,6 +204,7 @@ function addButtons() {
     addLayoutDropdownTo(buttons);
     addButtonTo(buttons, 'Random colours', randomiseColours);
     addButtonTo(buttons, 'Export text', exportNotesText);
+    addButtonTo(buttons, 'Import text', importNotesText);
 }
 
 // -----------------------------------------
