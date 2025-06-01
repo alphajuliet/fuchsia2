@@ -7,7 +7,7 @@
 class Info {
     public static appName = "fuchsia";
     public static author = "AndrewJ"; 
-    public static version = "2.3.1";
+    public static version = "2.3.2";
     public static date = "2025-06-01";
 	
 	public static appendTo(tagName: string): void {
@@ -80,20 +80,20 @@ function randomiseColours(): void {
 
 function exportNotesText(): void {
     const dialog = document.getElementById('output') as HTMLDialogElement;
-    const dialogText = document.getElementById('dialogText');
+    const dialogText = document.getElementById('dialogText') as HTMLDivElement;
     const exportText = notes.map(note => `${note.text.trim()}`).join("<br/>").replace(/<br><br\/>/g, "<br/>");
     // console.log(exportText);
     dialogText.innerHTML = exportText;
     dialog.showModal();
-    let range = new Range();
+    const range = new Range();
     range.selectNode(dialogText);
-    let sel = window.getSelection();
-    sel.removeAllRanges();
-    sel.addRange(range);
+    const sel = window.getSelection();
+    sel?.removeAllRanges();
+    sel?.addRange(range);
 }
 
 function importNotesText(): void {
-    const dialog = document.createElement('dialog') as HTMLDialogElement;
+    const dialog = document.createElement('dialog');
     dialog.id = 'import-dialog';
     
     const heading = document.createElement('h3');
@@ -117,7 +117,7 @@ function importNotesText(): void {
         
         lines.forEach(line => {
             if (line.trim()) {
-                let note = new Note();
+                const note = new Note();
                 note.id = ++highestId;
                 note.timestamp = new Date().getTime();
                 note.left = Math.round(Math.random() * 400) + 'px';
@@ -150,7 +150,7 @@ function importNotesText(): void {
 }
  
 function confirmDeleteAllNotes(): void {
-    const dialog = document.createElement('dialog') as HTMLDialogElement;
+    const dialog = document.createElement('dialog');
     dialog.id = 'confirm-delete-dialog';
     
     const heading = document.createElement('h3');

@@ -41,7 +41,7 @@ class Note {
         if (this._timestamp == x)
             return;
         this._timestamp = x;
-        let date = new Date();
+        const date = new Date();
         // date.setTime(parseFloat(x));
         date.setTime(x);
         this.lastModified.textContent = modifiedString(date);
@@ -74,12 +74,6 @@ class Note {
         edit.setAttribute('contentEditable', 'true');
         edit.addEventListener('keyup', () => this.onKeyUp(), false);
         edit.addEventListener('paste', (e) => this.onPaste(e), false);
-        // Remove deprecated call
-        // edit.addEventListener("paste", function(e) { 
-        //     e.preventDefault(); 
-        //     const text = e.clipboardData.getData("text/plain"); 
-        //     document.execCommand("insertHTML", false, text); 
-        // }, false);
         note.appendChild(edit);
         this.editField = edit;
 
@@ -163,13 +157,11 @@ class Note {
 
     public changeColour(color: string): void {
         this.colour = color;
-        // this.colorDisplay.style.backgroundColor = color;
         this.saveSoon();
     }
 
     public saveSoon(): void {
         this.cancelPendingSave();
-        const self = this;
         this._saveTimer = setTimeout(() => this.save(), 2000);
     }
 
@@ -188,14 +180,12 @@ class Note {
             delete this.dirty;
         }
 
-        let note = this;
-        store.updateNote(note);
+        store.updateNote(this);
     }
 
     public saveAsNew(): void {
         this.timestamp = new Date().getTime();
-        const note = this;
-        store.createNote(note);
+        store.createNote(this);
     }
 
     public onMouseDown(e: MouseEvent): boolean {
@@ -264,12 +254,11 @@ class Note {
     	if (e.targetTouches.length != 1)
     		return false;
 
-        const captured = this;
+        captured = this;
         this.startX = e.targetTouches[0].clientX - this.note.offsetLeft;
         this.startY = e.targetTouches[0].clientY - this.note.offsetTop;
         this.zIndex = (++Note.highestZ).toString();
 
-        const self = this;
         if (!this.touchMoveHandler) {
             this.touchMoveHandler = (e: TouchEvent) => this.onTouchMove(e);
             this.touchEndHandler = (e: TouchEvent) => this.onTouchEnd(e);
