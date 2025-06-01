@@ -90,20 +90,30 @@ class Note {
 
         const deleteButton = document.createElement('div');
         deleteButton.className = 'deleteButton';
-        deleteButton.title = "Delete this note"
+        deleteButton.title = "Delete this note";
+        deleteButton.setAttribute('data-note-id', this.id.toString());
         deleteButton.addEventListener('click', (event) => this.delete(event), false);
-        note.appendChild(deleteButton);
-
-        // const colourButton = document.createElement('button');
-        // colourButton.className = 'colourButton';
-        // colourButton.title = "Randomise the note colour";
-        // colourButton.addEventListener('click', (event) => this.changeColour(event), false);
-        // note.appendChild(colourButton);
-
+        deleteButton.style.display = 'none'; // Initially hidden
+        
+        // Position the delete button relative to the note
+        const updateDeleteButtonPosition = () => {
+            deleteButton.style.left = (parseInt(this.left) - 15) + 'px';
+            deleteButton.style.top = (parseInt(this.top) - 15) + 'px';
+        };
+        updateDeleteButtonPosition();
+        
         // Create the color picker container
         this.colorPicker = document.createElement('div');
         this.colorPicker.className = 'colorPicker';
         this.colorPicker.title = "Choose note color";
+        this.colorPicker.style.display = 'none'; // Initially hidden
+        
+        // Position the color picker relative to the note
+        const updateColorPickerPosition = () => {
+            this.colorPicker.style.left = (parseInt(this.left) - 10) + 'px';
+            this.colorPicker.style.top = (parseInt(this.top) + parseInt(this.note.style.height || '125') - 10) + 'px';
+        };
+        updateColorPickerPosition();
 
         // Create the color display
         this.colorDisplay = document.createElement('div');
@@ -116,16 +126,39 @@ class Note {
         colorOptions.className = 'colorOptions';
 
         // Add color options
-        colours.forEach((color) => {
+        colours.forEach((colour) => {
             const option = document.createElement('div');
             option.className = 'colorOption';
-            option.style.backgroundColor = color;
-            option.addEventListener('click', () => this.changeColour(color));
+            option.style.backgroundColor = colour;
+            option.addEventListener('click', () => this.changeColour(colour));
             colorOptions.appendChild(option);
         });
 
         this.colorPicker.appendChild(colorOptions);
-        note.appendChild(this.colorPicker);
+        
+        // Add mouseover/mouseout events to show/hide the UI elements
+        note.addEventListener('mouseover', () => {
+            deleteButton.style.display = 'block';
+            this.colorPicker.style.display = 'block';
+            updateDeleteButtonPosition();
+            updateColorPickerPosition();
+        });
+        
+        note.addEventListener('mouseout', (e) => {
+            // Check if the mouse is still over the note or its UI elements
+            const relatedTarget = e.relatedTarget as Node;
+            if (!note.contains(relatedTarget) && 
+                relatedTarget !== deleteButton && 
+                relatedTarget !== this.colorPicker && 
+                !this.colorPicker.contains(relatedTarget)) {
+                deleteButton.style.display = 'none';
+                this.colorPicker.style.display = 'none';
+            }
+        });
+        
+        // Add the UI elements to the document body
+        document.getElementById('notes').appendChild(deleteButton);
+        document.getElementById('notes').appendChild(this.colorPicker);
 
         document.getElementById('notes').appendChild(note);
     }
@@ -200,6 +233,19 @@ class Note {
 
         this.left = (e.clientX - this.startX) + 'px';
         this.top = (e.clientY - this.startY) + 'px';
+        
+        // Update positions of the UI elements
+        const deleteButton = document.querySelector(`.deleteButton[data-note-id="${this.id}"]`) as HTMLElement;
+        if (deleteButton && deleteButton.style.display !== 'none') {
+            deleteButton.style.left = (parseInt(this.left) - 15) + 'px';
+            deleteButton.style.top = (parseInt(this.top) - 15) + 'px';
+        }
+        
+        if (this.colorPicker && this.colorPicker.style.display !== 'none') {
+            this.colorPicker.style.left = (parseInt(this.left) - 10) + 'px';
+            this.colorPicker.style.top = (parseInt(this.top) + parseInt(this.note.style.height || '125') - 10) + 'px';
+        }
+        
         return false;
     }
 

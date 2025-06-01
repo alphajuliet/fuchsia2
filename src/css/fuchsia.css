@@ -58,10 +58,7 @@ button:hover {
     overflow: auto;
 }
 
-.note:hover .deleteButton,
-.note:hover .colorPicker {
-    display: block;
-}
+/* Removed hover selectors as we now handle display with JavaScript */
  
 .deleteButton {
     display: none;
@@ -71,6 +68,7 @@ button:hover {
     left: -15px;
     top: -15px;
     width: 30px;
+    z-index: 1003;
 }
  
 .deleteButton:active {
@@ -155,6 +153,7 @@ dialog {
     width: 25px;
     height: 25px;
     cursor: pointer;
+    z-index: 1003;
 }
 
 .colorDisplay {
@@ -171,7 +170,7 @@ dialog {
     background-color: white;
     border: 1px solid #ccc;
     padding: 5px;
-    z-index: 1000;
+    z-index: 1004;
 }
 
 .colorPicker:hover .colorOptions {
