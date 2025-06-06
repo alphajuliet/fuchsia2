@@ -31,7 +31,7 @@ let notes = [];
 const store = new Html5Storage();
 
 // -----------------------------------------
-let captured = null;
+let captured: Note | null = null;
 let highestZ = 0;
 let highestId = 0; // Global id counter
 

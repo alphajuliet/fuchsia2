@@ -63,7 +63,7 @@ class Note {
         note.className = 'note';
         note.setAttribute('id', `note_${this.id}`);
         note.addEventListener('mousedown', (e) => this.onMouseDown(e), false);
-        note.addEventListener('click', () => this.onNoteClick(), false);
+        note.addEventListener('click', (e) => this.onNoteClick(e), false);
         // supportsTouch && note.addEventListener('touchstart', (e) => this.onTouchStart(e), false);
         // supportsTouch && note.addEventListener('touchend', (e) => this.onTouchEnd(e), false);
         // supportsTouch && note.addEventListener('touchcancel', (e) => this.onTouchEnd(e), false);
@@ -72,7 +72,7 @@ class Note {
         const edit = document.createElement('div');
         edit.className = 'edit';
         edit.setAttribute('contentEditable', 'true');
-        edit.addEventListener('keyup', () => this.onKeyUp(), false);
+        edit.addEventListener('keyup', (e) => this.onKeyUp(e), false);
         edit.addEventListener('paste', (e) => this.onPaste(e), false);
         note.appendChild(edit);
         this.editField = edit;
@@ -233,14 +233,14 @@ class Note {
         return false;
     }
 
-    public onNoteClick(e?: Event): void {
+    public onNoteClick(e: Event): void {
         this.editField.focus();
         const sel = getSelection();
         if (sel.anchorNode) 
             sel.collapseToEnd();
     }
 
-    public onKeyUp(): void {
+    public onKeyUp(e: Event): void {
         this.dirty = true;
         this.saveSoon();
     }
