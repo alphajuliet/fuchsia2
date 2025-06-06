@@ -1,41 +1,58 @@
 // -----------------------------------------
-// fuchsia.js
+// fuchsia.ts
 // Based on http://net.tutsplus.com/articles/news/create-a-sticky-note-effect-in-5-easy-steps-with-css3-and-html5/
 // -----------------------------------------
 
-// Object: info
+/**
+ * Application information class
+ */
 class Info {
-    public static appName = "fuchsia";
-    public static author = "AndrewJ"; 
-    public static version = "2.3.2";
-    public static date = "2025-06-01";
+    private static readonly _appName = "fuchsia";
+    private static readonly _author = "AndrewJ"; 
+    private static readonly _version = "2.3.2";
+    private static readonly _date = "2025-06-01";
 	
-	public static appendTo(tagName: string): void {
-		const src = document.getElementById(tagName);
-		const title = document.createElement('span');
-		title.className = 'title';
-		title.appendChild(document.createTextNode(Info.appName));
-		const str = document.createElement('p');
-		str.appendChild(title);
-		str.appendChild(document.createTextNode(Info.version));
-		src.appendChild(str);
-	}
+    public static get appName(): string { return Info._appName; }
+    public static get author(): string { return Info._author; }
+    public static get version(): string { return Info._version; }
+    public static get date(): string { return Info._date; }
+	
+    public static appendTo(tagName: string): void {
+        const src = document.getElementById(tagName);
+        if (!src) {
+            console.error(`Element with id ${tagName} not found`);
+            return;
+        }
+        
+        const title = document.createElement('span');
+        title.className = 'title';
+        title.appendChild(document.createTextNode(Info.appName));
+        
+        const str = document.createElement('p');
+        str.appendChild(title);
+        str.appendChild(document.createTextNode(Info.version));
+        
+        src.appendChild(str);
+    }
 }
-const info = new Info();
+
+// Application constants
 const supportsTouch = 'createTouch' in document;
-const debug = true;
+const DEBUG = false; // Set to true to enable debug logging
 
 // -----------------------------------------
 // Storage options
-let notes = [];
-const store = new Html5Storage();
+let notes: Note[] = [];
+const store: IStorage = new Html5Storage();
 
 // -----------------------------------------
-let captured = null;
+// Global state
+let captured: Note | null = null;
 let highestZ = 0;
 let highestId = 0; // Global id counter
 
-const colours = [
+// Color palette
+const colours: Color[] = [
     '#eeeeee', '#cccccc', // greys
     '#ff9999', '#ffccff', '#ddaaaa', '#cc9966', '#ff99cc', '#cc9900', // reds/browns
     '#ff9966', '#ffff00', '#ff9900', '#ffcc00', '#ffcc99', // oranges/yellows
@@ -44,47 +61,86 @@ const colours = [
 ];
 
 // -----------------------------------------
+/**
+ * Initialize the application after loading
+ */
 function loaded(): void {
-	store.initialise();
+    store.initialise();
 }
  
 // -----------------------------------------
+/**
+ * Format a date as a modified string
+ */
 function modifiedString(date: Date): string {
-    return `Last Modified: ${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const seconds = date.getSeconds().toString().padStart(2, '0');
+    
+    return `Last Modified: ${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
-function randomColour(): string {
+/**
+ * Get a random color from the palette
+ */
+function randomColour(): Color {
     return colours[Math.floor(Math.random() * colours.length)];
 }
 
 // -----------------------------------------
+/**
+ * Create a new note
+ */
 function newNote(): void {
-    let note = new Note();
+    const note = new Note();
     note.id = ++highestId;
     note.timestamp = new Date().getTime();
-    note.left = Math.round(Math.random() * 400) + 'px';
-    note.top = Math.round(Math.random() * 500) + 'px';
+    note.left = `${Math.round(Math.random() * 400)}px`;
+    note.top = `${Math.round(Math.random() * 500)}px`;
     note.zIndex = (++Note.highestZ).toString();
     note.colour = randomColour();
     note.saveAsNew();
     notes.push(note);
-    note.noteDiv.querySelector<HTMLInputElement>('.edit')!.focus();
+    
+    const editField = note.noteDiv.querySelector<HTMLInputElement>('.edit');
+    if (editField) {
+        editField.focus();
+    }
 }
 
+/**
+ * Randomize colors of all notes
+ */
 function randomiseColours(): void {
     notes.forEach(note => {
         note.colour = randomColour();
         note.save();
-    })
+    });
 }
 
+/**
+ * Export notes as text
+ */
 function exportNotesText(): void {
     const dialog = document.getElementById('output') as HTMLDialogElement;
     const dialogText = document.getElementById('dialogText') as HTMLDivElement;
-    const exportText = notes.map(note => `${note.text.trim()}`).join("<br/>").replace(/<br><br\/>/g, "<br/>");
-    // console.log(exportText);
+    
+    if (!dialog || !dialogText) {
+        console.error('Export dialog elements not found');
+        return;
+    }
+    
+    const exportText = notes
+        .map(note => note.text.trim())
+        .join("<br/>")
+        .replace(/<br><br\/>/g, "<br/>");
+    
     dialogText.innerHTML = exportText;
     dialog.showModal();
+    
     const range = new Range();
     range.selectNode(dialogText);
     const sel = window.getSelection();
@@ -92,6 +148,9 @@ function exportNotesText(): void {
     sel?.addRange(range);
 }
 
+/**
+ * Import notes from text
+ */
 function importNotesText(): void {
     const dialog = document.createElement('dialog');
     dialog.id = 'import-dialog';
@@ -117,38 +176,53 @@ function importNotesText(): void {
         
         lines.forEach(line => {
             if (line.trim()) {
-                const note = new Note();
-                note.id = ++highestId;
-                note.timestamp = new Date().getTime();
-                note.left = Math.round(Math.random() * 400) + 'px';
-                note.top = Math.round(Math.random() * 500) + 'px';
-                note.zIndex = (++Note.highestZ).toString();
-                note.colour = randomColour();
-                note.text = line.trim();
-                note.saveAsNew();
-                notes.push(note);
+                createNoteFromText(line.trim());
             }
         });
         
-        dialog.close();
-        document.body.removeChild(dialog);
+        closeDialog(dialog);
     };
     buttonContainer.appendChild(importButton);
     
     const cancelButton = document.createElement('button');
     cancelButton.textContent = 'Cancel';
     cancelButton.style.marginLeft = '10px';
-    cancelButton.onclick = () => {
-        dialog.close();
-        document.body.removeChild(dialog);
-    };
+    cancelButton.onclick = () => closeDialog(dialog);
     buttonContainer.appendChild(cancelButton);
     
     dialog.appendChild(buttonContainer);
     document.body.appendChild(dialog);
     dialog.showModal();
 }
+
+/**
+ * Create a note from text
+ */
+function createNoteFromText(text: string): Note {
+    const note = new Note();
+    note.id = ++highestId;
+    note.timestamp = new Date().getTime();
+    note.left = `${Math.round(Math.random() * 400)}px`;
+    note.top = `${Math.round(Math.random() * 500)}px`;
+    note.zIndex = (++Note.highestZ).toString();
+    note.colour = randomColour();
+    note.text = text;
+    note.saveAsNew();
+    notes.push(note);
+    return note;
+}
+
+/**
+ * Close and remove a dialog
+ */
+function closeDialog(dialog: HTMLDialogElement): void {
+    dialog.close();
+    document.body.removeChild(dialog);
+}
  
+/**
+ * Confirm deletion of all notes
+ */
 function confirmDeleteAllNotes(): void {
     const dialog = document.createElement('dialog');
     dialog.id = 'confirm-delete-dialog';
@@ -168,8 +242,7 @@ function confirmDeleteAllNotes(): void {
     deleteButton.textContent = 'Delete All';
     deleteButton.style.backgroundColor = '#ff6666';
     deleteButton.onclick = () => {
-        dialog.close();
-        document.body.removeChild(dialog);
+        closeDialog(dialog);
         deleteAllNotes();
     };
     buttonContainer.appendChild(deleteButton);
@@ -177,10 +250,7 @@ function confirmDeleteAllNotes(): void {
     const cancelButton = document.createElement('button');
     cancelButton.textContent = 'Cancel';
     cancelButton.style.marginLeft = '10px';
-    cancelButton.onclick = () => {
-        dialog.close();
-        document.body.removeChild(dialog);
-    };
+    cancelButton.onclick = () => closeDialog(dialog);
     buttonContainer.appendChild(cancelButton);
     
     dialog.appendChild(buttonContainer);
@@ -188,50 +258,76 @@ function confirmDeleteAllNotes(): void {
     dialog.showModal();
 }
 
+/**
+ * Delete all notes
+ */
 function deleteAllNotes(): void {
-	store.deleteAllNotes();
+    store.deleteAllNotes();
     notes = [];
-    // Clear the notes container which will remove all notes, delete buttons, and color pickers
-    document.getElementById('notes').innerHTML = '';
+    
+    // Clear the notes container
+    const notesContainer = document.getElementById('notes');
+    if (notesContainer) {
+        notesContainer.innerHTML = '';
+    }
 }
 
+/**
+ * Add a button to a target element
+ */
 function addButtonTo(target: HTMLElement, text: string, onclick: () => void): void {
     const button = document.createElement('button');
-    button.innerHTML = text;
+    button.textContent = text;
     button.onclick = onclick;
     target.appendChild(button);
 }
 
+/**
+ * Create a div option for dropdown
+ */
 function divOption(text: string, onclick: () => void): HTMLElement {
     const div = document.createElement('div');
-    div.innerHTML = text;
+    div.textContent = text;
     div.onclick = onclick;
     return div;
 }
 
+/**
+ * Add layout dropdown to target element
+ */
 function addLayoutDropdownTo(target: HTMLElement): void {
     const dropdown = document.createElement('button');
     dropdown.className = 'dropdown';
-    dropdown.innerHTML = 'Layout ∨';
+    dropdown.textContent = 'Layout ∨';
+    
     const options = document.createElement('div');
     options.className = 'options';
     options.appendChild(divOption('Random', () => Layout.randomLayout(notes)));
     options.appendChild(divOption('Stack', () => Layout.stackLayout(notes)));
     options.appendChild(divOption('Grid', () => Layout.gridLayout(notes)));
+    
     dropdown.appendChild(options);
     target.appendChild(dropdown);
-    dropdown.onclick = function() {
-        dropdown.classList.toggle("active")
-    }
+    
+    dropdown.onclick = () => {
+        dropdown.classList.toggle("active");
+    };
 }
 
+/**
+ * Add all buttons to the UI
+ */
 function addButtons(): void {
     const buttons = document.getElementById('buttons');
+    if (!buttons) {
+        console.error('Buttons container not found');
+        return;
+    }
 
     const newNoteButton = document.createElement('button');
     newNoteButton.onclick = newNote;
     newNoteButton.accessKey = 'n';
-    newNoteButton.innerHTML = 'New Note';
+    newNoteButton.textContent = 'New Note';
     newNoteButton.disabled = !store.isAvailable;
     buttons.appendChild(newNoteButton);
 
@@ -243,11 +339,13 @@ function addButtons(): void {
 }
 
 // -----------------------------------------
-if (store.isAvailable)
+// Initialize the application
+if (store.isAvailable) {
     addEventListener('load', loaded, false);
+}
 
 function initialise(): void {
-	Info.appendTo("heading");
+    Info.appendTo("heading");
     addButtons();
 }
 

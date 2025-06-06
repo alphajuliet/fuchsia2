@@ -2,7 +2,16 @@
     "compilerOptions": {
         "outDir": "./built",
         "allowJs": true,
-        "target": "es6"
+        "target": "es6",
+        "strict": true,
+        "noImplicitAny": true,
+        "strictNullChecks": true,
+        "noImplicitThis": true,
+        "alwaysStrict": true,
+        "esModuleInterop": true,
+        "moduleResolution": "node",
+        "lib": ["dom", "es6", "dom.iterable", "scripthost"],
+        "sourceMap": true
     },
     "include": [
         "./src/**/*"
