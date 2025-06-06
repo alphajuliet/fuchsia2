@@ -10,7 +10,7 @@
         "alwaysStrict": true,
         "esModuleInterop": true,
         "moduleResolution": "node",
-        "lib": ["dom", "es6", "dom.iterable", "scripthost"],
+        "lib": ["dom", "es2017", "dom.iterable", "scripthost"],
         "sourceMap": true
     },
     "include": [

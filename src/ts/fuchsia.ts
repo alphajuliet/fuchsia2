@@ -9,8 +9,8 @@
 class Info {
     private static readonly _appName = "fuchsia";
     private static readonly _author = "AndrewJ"; 
-    private static readonly _version = "2.3.2";
-    private static readonly _date = "2025-06-01";
+    private static readonly _version = "2.3.3";
+    private static readonly _date = "2025-06-07";
 	
     public static get appName(): string { return Info._appName; }
     public static get author(): string { return Info._author; }
@@ -37,8 +37,8 @@ class Info {
 }
 
 // Application constants
-const supportsTouch = 'createTouch' in document;
-const DEBUG = false; // Set to true to enable debug logging
+const supportsTouch: boolean = 'createTouch' in document;
+const DEBUG: boolean = false; // Set to true to enable debug logging
 
 // -----------------------------------------
 // Storage options
@@ -48,8 +48,8 @@ const store: IStorage = new Html5Storage();
 // -----------------------------------------
 // Global state
 let captured: Note | null = null;
-let highestZ = 0;
-let highestId = 0; // Global id counter
+let highestZ: number = 0;
+let highestId: number = 0; // Global id counter
 
 // Color palette
 const colours: Color[] = [
@@ -170,7 +170,7 @@ function importNotesText(): void {
     
     const importButton = document.createElement('button');
     importButton.textContent = 'Import';
-    importButton.onclick = () => {
+    importButton.addEventListener('click', () => {
         const text = textarea.value;
         const lines = text.split('\n');
         
@@ -181,13 +181,13 @@ function importNotesText(): void {
         });
         
         closeDialog(dialog);
-    };
+    });
     buttonContainer.appendChild(importButton);
     
     const cancelButton = document.createElement('button');
     cancelButton.textContent = 'Cancel';
     cancelButton.style.marginLeft = '10px';
-    cancelButton.onclick = () => closeDialog(dialog);
+    cancelButton.addEventListener('click', () => closeDialog(dialog));
     buttonContainer.appendChild(cancelButton);
     
     dialog.appendChild(buttonContainer);
@@ -241,16 +241,16 @@ function confirmDeleteAllNotes(): void {
     const deleteButton = document.createElement('button');
     deleteButton.textContent = 'Delete All';
     deleteButton.style.backgroundColor = '#ff6666';
-    deleteButton.onclick = () => {
+    deleteButton.addEventListener('click', () => {
         closeDialog(dialog);
         deleteAllNotes();
-    };
+    });
     buttonContainer.appendChild(deleteButton);
     
     const cancelButton = document.createElement('button');
     cancelButton.textContent = 'Cancel';
     cancelButton.style.marginLeft = '10px';
-    cancelButton.onclick = () => closeDialog(dialog);
+    cancelButton.addEventListener('click', () => closeDialog(dialog));
     buttonContainer.appendChild(cancelButton);
     
     dialog.appendChild(buttonContainer);
@@ -278,7 +278,7 @@ function deleteAllNotes(): void {
 function addButtonTo(target: HTMLElement, text: string, onclick: () => void): void {
     const button = document.createElement('button');
     button.textContent = text;
-    button.onclick = onclick;
+    button.addEventListener('click', onclick);
     target.appendChild(button);
 }
 
@@ -288,7 +288,7 @@ function addButtonTo(target: HTMLElement, text: string, onclick: () => void): vo
 function divOption(text: string, onclick: () => void): HTMLElement {
     const div = document.createElement('div');
     div.textContent = text;
-    div.onclick = onclick;
+    div.addEventListener('click', onclick);
     return div;
 }
 
@@ -309,9 +309,9 @@ function addLayoutDropdownTo(target: HTMLElement): void {
     dropdown.appendChild(options);
     target.appendChild(dropdown);
     
-    dropdown.onclick = () => {
-        dropdown.classList.toggle("active");
-    };
+    dropdown.addEventListener('click', () => {
+        dropdown.classList.toggle('active');
+    });
 }
 
 /**
@@ -325,7 +325,7 @@ function addButtons(): void {
     }
 
     const newNoteButton = document.createElement('button');
-    newNoteButton.onclick = newNote;
+    newNoteButton.addEventListener('click', newNote);
     newNoteButton.accessKey = 'n';
     newNoteButton.textContent = 'New Note';
     newNoteButton.disabled = !store.isAvailable;

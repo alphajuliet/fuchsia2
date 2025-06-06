@@ -4,17 +4,17 @@
  * Interface for a note object
  */
 interface INote {
-    id: number;
+    readonly id: number;
     text: string;
-    colour: string;
+    colour: Color;
     timestamp: number;
     left: string;
     top: string;
     zIndex: string;
-    noteDiv: HTMLDivElement;
+    readonly noteDiv: HTMLDivElement;
     
     delete(event: Event): void;
-    changeColour(color: string): void;
+    changeColour(color: Color): void;
     saveSoon(): void;
     save(): void;
     saveAsNew(): void;

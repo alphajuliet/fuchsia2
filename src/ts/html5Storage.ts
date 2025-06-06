@@ -1,8 +1,8 @@
 // -----------------------------------------
 // HTML5 storage
 
-class Html5Storage {
-	private readonly prefix = "fuchsia2.";
+class Html5Storage implements IStorage {
+	private readonly prefix: string = "fuchsia2.";
 	private readonly _isAvailable: boolean;
 
 	constructor() {

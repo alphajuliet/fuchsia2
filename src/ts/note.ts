@@ -5,8 +5,8 @@
  * Implements the INote interface
  */
 class Note implements INote {
-    private _id: number;
-    private _timestamp: number;
+    private _id: number = 0;
+    private _timestamp: number = 0;
     private _saveTimer?: number;
 
     private static _highestId = 0;
@@ -24,9 +24,9 @@ class Note implements INote {
     private touchMoveHandler?: (e: TouchEvent) => boolean;
     private touchEndHandler?: (e: TouchEvent) => boolean;
     
-    private startX = 0;
-    private startY = 0;
-    private dirty = false;
+    private startX: number = 0;
+    private startY: number = 0;
+    private dirty: boolean = false;
 
     /**
      * Get the note's DOM element
@@ -260,8 +260,8 @@ class Note implements INote {
             this.mouseUpHandler = this.onMouseUp.bind(this);
         }
 
-        document.addEventListener('mousemove', this.mouseMoveHandler, true);
-        document.addEventListener('mouseup', this.mouseUpHandler, true);
+        document.addEventListener('mousemove', this.mouseMoveHandler!, true);
+        document.addEventListener('mouseup', this.mouseUpHandler!, true);
         return false;
     }
 
@@ -427,7 +427,7 @@ class Note implements INote {
         colorOptions.className = 'colorOptions';
 
         // Add color options
-        colours.forEach((colour) => {
+        colours.forEach((colour: Color) => {
             const option = document.createElement('div');
             option.className = 'colorOption';
             option.style.backgroundColor = colour;
