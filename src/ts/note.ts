@@ -15,11 +15,9 @@ class Note implements INote {
     private readonly note: HTMLDivElement;
     private readonly editField: HTMLDivElement;
     private readonly lastModified: HTMLDivElement;
-    private readonly colorPicker: HTMLDivElement;
-    private readonly colorDisplay: HTMLDivElement;
-    private readonly deleteButton: HTMLDivElement;
     
     private draggable: NoteDraggable;
+    private controls: NoteControls;
     private dirty: boolean = false;
 
     /**
@@ -143,25 +141,16 @@ class Note implements INote {
         ts.className = 'timestamp';
         this.lastModified = ts;
 
-        // Create the delete button
-        this.deleteButton = this.createDeleteButton();
-        
-        // Create the color picker
-        this.colorPicker = this.createColorPicker();
-        this.colorDisplay = this.colorPicker.querySelector('.colorDisplay') as HTMLDivElement;
-        
-        // Set up event listeners for showing/hiding UI elements
-        this.setupUIVisibilityEvents(note);
-        
-        // Add elements to the DOM
+        // Add note to the DOM
         const notesContainer = document.getElementById('notes');
         if (notesContainer) {
-            notesContainer.appendChild(this.deleteButton);
-            notesContainer.appendChild(this.colorPicker);
             notesContainer.appendChild(note);
         } else {
             console.error('Notes container not found');
         }
+
+        // Create UI controls
+        this.controls = new NoteControls(this);
         
         // Initialize draggable functionality
         this.draggable = new NoteDraggable(note, {
@@ -170,7 +159,7 @@ class Note implements INote {
                 this.zIndex = (++Note.highestZ).toString();
             },
             onDragMove: () => {
-                this.updateUIElementPositions();
+                this.controls.updatePositions();
             },
             onDragEnd: () => {
                 this.save();
@@ -189,12 +178,11 @@ class Note implements INote {
         this.cancelPendingSave();
         store.deleteNote(this);
         
-        // Clean up draggable
+        // Clean up draggable and controls
         this.draggable.destroy();
+        this.controls.destroy();
         
-        // Remove UI elements from the DOM
-        this.deleteButton.remove();
-        this.colorPicker.remove();
+        // Remove note from DOM
         this.note.remove();
         
         // Remove from the notes array
@@ -274,9 +262,7 @@ class Note implements INote {
      * Handle long press event (called by NoteDraggable)
      */
     private onLongPress(): void {
-        this.deleteButton.style.display = 'block';
-        this.colorPicker.style.display = 'block';
-        this.updateUIElementPositions();
+        this.controls.show();
     }
 
     /**
@@ -286,119 +272,5 @@ class Note implements INote {
         e.preventDefault();
         const text = e.clipboardData?.getData('text/plain') || '';
         document.execCommand('insertHTML', false, text);
-    }
-    
-    /**
-     * Create the delete button
-     */
-    private createDeleteButton(): HTMLDivElement {
-        const deleteButton = document.createElement('div');
-        deleteButton.className = 'deleteButton';
-        deleteButton.title = "Delete this note";
-        deleteButton.setAttribute('data-note-id', this.id.toString());
-        deleteButton.addEventListener('click', (event) => this.delete(event), false);
-        deleteButton.style.display = 'none'; // Initially hidden
-        
-        // Position the delete button
-        deleteButton.style.left = `${parseInt(this.left || '0') - 15}px`;
-        deleteButton.style.top = `${parseInt(this.top || '0') - 15}px`;
-        
-        return deleteButton;
-    }
-    
-    /**
-     * Create the color picker
-     */
-    private createColorPicker(): HTMLDivElement {
-        // Create the color picker container
-        const colorPicker = document.createElement('div');
-        colorPicker.className = 'colorPicker';
-        colorPicker.title = "Choose note color";
-        colorPicker.style.display = 'none'; // Initially hidden
-        
-        // Position the color picker
-        colorPicker.style.left = `${parseInt(this.left || '0') - 10}px`;
-        colorPicker.style.top = `${parseInt(this.top || '0') + 125 - 10}px`;
-        
-        // Create the color display
-        const colorDisplay = document.createElement('div');
-        colorDisplay.className = 'colorDisplay';
-        colorDisplay.style.backgroundColor = this.colour;
-        colorPicker.appendChild(colorDisplay);
-
-        // Create the color options container
-        const colorOptions = document.createElement('div');
-        colorOptions.className = 'colorOptions';
-
-        // Add color options
-        colours.forEach((colour: Color) => {
-            const option = document.createElement('div');
-            option.className = 'colorOption';
-            option.style.backgroundColor = colour;
-            option.addEventListener('click', () => this.changeColour(colour));
-            colorOptions.appendChild(option);
-        });
-
-        colorPicker.appendChild(colorOptions);
-        
-        return colorPicker;
-    }
-    
-    /**
-     * Set up events for showing/hiding UI elements
-     */
-    private setupUIVisibilityEvents(note: HTMLDivElement): void {
-        // Show UI elements on mouseover (desktop only)
-        if (!supportsTouch) {
-            note.addEventListener('mouseover', () => {
-                this.deleteButton.style.display = 'block';
-                this.colorPicker.style.display = 'block';
-                this.updateUIElementPositions();
-            });
-            
-            // Hide UI elements on mouseout (desktop only)
-            note.addEventListener('mouseout', (e) => {
-                // Check if the mouse is still over the note or its UI elements
-                const relatedTarget = e.relatedTarget as Node;
-                if (!note.contains(relatedTarget) && 
-                    relatedTarget !== this.deleteButton && 
-                    relatedTarget !== this.colorPicker && 
-                    !this.colorPicker.contains(relatedTarget)) {
-                    this.deleteButton.style.display = 'none';
-                    this.colorPicker.style.display = 'none';
-                }
-            });
-        }
-        
-        // For touch devices, hide UI elements when touching elsewhere
-        if (supportsTouch) {
-            document.addEventListener('touchstart', (e) => {
-                const target = e.target as Node;
-                if (!note.contains(target) && 
-                    target !== this.deleteButton && 
-                    target !== this.colorPicker && 
-                    !this.colorPicker.contains(target)) {
-                    this.deleteButton.style.display = 'none';
-                    this.colorPicker.style.display = 'none';
-                }
-            });
-        }
-    }
-    
-    /**
-     * Update positions of UI elements
-     */
-    private updateUIElementPositions(): void {
-        // Update delete button position
-        if (this.deleteButton && this.deleteButton.style.display !== 'none') {
-            this.deleteButton.style.left = `${parseInt(this.left) - 15}px`;
-            this.deleteButton.style.top = `${parseInt(this.top) - 15}px`;
-        }
-        
-        // Update color picker position
-        if (this.colorPicker && this.colorPicker.style.display !== 'none') {
-            this.colorPicker.style.left = `${parseInt(this.left) - 10}px`;
-            this.colorPicker.style.top = `${parseInt(this.top) + parseInt(this.note.style.height || '125') - 10}px`;
-        }
     }
 }

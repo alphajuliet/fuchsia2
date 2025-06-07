@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build:ts": "tsc",
-    "build:concat": "cat built/types.js built/html5Storage.js built/note-draggable.js built/note.js built/layouts.js built/fuchsia.js > built/bundle.js",
+    "build:concat": "cat built/types.js built/html5Storage.js built/note-draggable.js built/note-controls.js built/note.js built/layouts.js built/fuchsia.js > built/bundle.js",
     "build": "npm run build:ts && npm run build:concat",
     "dev": "tsc --watch",
     "test": "echo \"Error: no test specified\" && exit 1"

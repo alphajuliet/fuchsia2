@@ -4,6 +4,7 @@
 import './types';
 import './html5Storage';
 import './note-draggable';
+import './note-controls';
 import './note';
 import './layouts';
 import './fuchsia';
