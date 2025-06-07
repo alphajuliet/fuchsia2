@@ -338,6 +338,57 @@ function addButtons(): void {
     addButtonTo(buttons, 'Import text', importNotesText);
 }
 
+/**
+ * Setup keyboard shortcuts
+ */
+function setupKeyboardShortcuts(): void {
+    let awaitingCommand = false;
+    
+    document.addEventListener('keydown', (event: KeyboardEvent) => {
+        // First check for backslash to enter command mode
+        if (event.key === '\\' && !awaitingCommand) {
+            event.preventDefault();
+            awaitingCommand = true;
+            return;
+        }
+        
+        // If we're awaiting a command after backslash
+        if (awaitingCommand) {
+            event.preventDefault();
+            awaitingCommand = false;
+            
+            switch (event.key.toLowerCase()) {
+                case 'n':
+                    if (store.isAvailable) {
+                        newNote();
+                    }
+                    break;
+                case 'e':
+                    exportNotesText();
+                    break;
+                case 'i':
+                    importNotesText();
+                    break;
+                case 'r':
+                    randomiseColours();
+                    break;
+                case '3':
+                    Layout.gridLayout(notes);
+                    break;
+                case '2':
+                    Layout.stackLayout(notes);
+                    break;
+                case '1':
+                    Layout.randomLayout(notes);
+                    break;
+                case 'd':
+                    confirmDeleteAllNotes();
+                    break;
+            }
+        }
+    });
+}
+
 // -----------------------------------------
 // Initialize the application
 if (store.isAvailable) {
@@ -347,6 +398,7 @@ if (store.isAvailable) {
 function initialise(): void {
     Info.appendTo("heading");
     addButtons();
+    setupKeyboardShortcuts();
 }
 
 // -----------------------------------------
