@@ -19,16 +19,8 @@ class Note implements INote {
     private readonly colorDisplay: HTMLDivElement;
     private readonly deleteButton: HTMLDivElement;
     
-    private mouseMoveHandler?: (e: MouseEvent) => boolean;
-    private mouseUpHandler?: (e: MouseEvent) => boolean;
-    private touchMoveHandler?: (e: TouchEvent) => boolean;
-    private touchEndHandler?: (e: TouchEvent) => boolean;
-    
-    private startX: number = 0;
-    private startY: number = 0;
+    private draggable: NoteDraggable;
     private dirty: boolean = false;
-    private longPressTimer?: number;
-    private readonly LONG_PRESS_DURATION = 500;
 
     /**
      * Get the note's DOM element
@@ -134,14 +126,7 @@ class Note implements INote {
         const note = document.createElement('div');
         note.className = 'note';
         note.setAttribute('id', `note_${this.id}`);
-        note.addEventListener('mousedown', (e) => this.onMouseDown(e), false);
         note.addEventListener('click', () => this.onNoteClick(), false);
-        
-        if (supportsTouch) {
-            note.addEventListener('touchstart', (e) => this.onTouchStart(e), false);
-            note.addEventListener('touchend', (e) => this.onTouchEnd(e), false);
-            note.addEventListener('touchcancel', (e) => this.onTouchEnd(e), false);
-        }
         this.note = note;
 
         // Create the editable content area
@@ -156,7 +141,6 @@ class Note implements INote {
         // Create the timestamp element
         const ts = document.createElement('div');
         ts.className = 'timestamp';
-        ts.addEventListener('mousedown', (e) => this.onMouseDown(e), false);
         this.lastModified = ts;
 
         // Create the delete button
@@ -178,6 +162,23 @@ class Note implements INote {
         } else {
             console.error('Notes container not found');
         }
+        
+        // Initialize draggable functionality
+        this.draggable = new NoteDraggable(note, {
+            onDragStart: () => {
+                captured = this;
+                this.zIndex = (++Note.highestZ).toString();
+            },
+            onDragMove: () => {
+                this.updateUIElementPositions();
+            },
+            onDragEnd: () => {
+                this.save();
+            },
+            onLongPress: () => {
+                this.onLongPress();
+            }
+        });
     }
 
     /**
@@ -187,6 +188,9 @@ class Note implements INote {
         // Remove from the store
         this.cancelPendingSave();
         store.deleteNote(this);
+        
+        // Clean up draggable
+        this.draggable.destroy();
         
         // Remove UI elements from the DOM
         this.deleteButton.remove();
@@ -246,57 +250,6 @@ class Note implements INote {
         store.createNote(this);
     }
 
-    /**
-     * Handle mouse down event
-     */
-    private onMouseDown(e: MouseEvent): boolean {
-        captured = this;
-        this.startX = e.clientX - this.note.offsetLeft;
-        this.startY = e.clientY - this.note.offsetTop;
-        this.zIndex = (++Note.highestZ).toString();
-
-        // Memoize event handlers
-        if (!this.mouseMoveHandler) {
-            this.mouseMoveHandler = this.onMouseMove.bind(this);
-            this.mouseUpHandler = this.onMouseUp.bind(this);
-        }
-
-        document.addEventListener('mousemove', this.mouseMoveHandler!, true);
-        document.addEventListener('mouseup', this.mouseUpHandler!, true);
-        return false;
-    }
-
-    /**
-     * Handle mouse move event
-     */
-    private onMouseMove(e: MouseEvent): boolean {
-        if (this !== captured) {
-            return true;
-        }
-
-        this.left = `${e.clientX - this.startX}px`;
-        this.top = `${e.clientY - this.startY}px`;
-        
-        this.updateUIElementPositions();
-        
-        return false;
-    }
-
-    /**
-     * Handle mouse up event
-     */
-    private onMouseUp(e: MouseEvent): boolean {
-        if (this.mouseMoveHandler) {
-            document.removeEventListener('mousemove', this.mouseMoveHandler, true);
-        }
-        
-        if (this.mouseUpHandler) {
-            document.removeEventListener('mouseup', this.mouseUpHandler, true);
-        }
-        
-        this.save();
-        return false;
-    }
 
     /**
      * Handle note click event
@@ -318,93 +271,12 @@ class Note implements INote {
     }
 
     /**
-     * Handle touch start event
-     */
-    private onTouchStart(e: TouchEvent): boolean {
-        e.preventDefault();
-        if (e.targetTouches.length !== 1) {
-            return false;
-        }
-
-        captured = this;
-        this.startX = e.targetTouches[0].clientX - this.note.offsetLeft;
-        this.startY = e.targetTouches[0].clientY - this.note.offsetTop;
-        this.zIndex = (++Note.highestZ).toString();
-
-        if (!this.touchMoveHandler || !this.touchEndHandler) {
-            this.touchMoveHandler = this.onTouchMove.bind(this);
-            this.touchEndHandler = this.onTouchEnd.bind(this);
-        }
-        
-        document.addEventListener('touchmove', this.touchMoveHandler, true);
-        document.addEventListener('touchend', this.touchEndHandler, true);
-        document.addEventListener('touchcancel', this.touchEndHandler, true);
-        
-        // Start long press timer
-        this.longPressTimer = window.setTimeout(() => {
-            this.onLongPress();
-        }, this.LONG_PRESS_DURATION);
-        
-        return false;
-    }   
-
-    /**
-     * Handle touch move event
-     */
-    private onTouchMove(e: TouchEvent): boolean {
-        if (this !== captured) {
-            return true;
-        }
-        
-        // Cancel long press timer when user starts dragging
-        this.cancelLongPressTimer();
-        
-        this.left = `${e.targetTouches[0].clientX - this.startX}px`;
-        this.top = `${e.targetTouches[0].clientY - this.startY}px`;
-        
-        this.updateUIElementPositions();
-        
-        return false; 
-    }
-
-    /**
-     * Handle touch end event
-     */
-    private onTouchEnd(e: TouchEvent): boolean {
-        // Cancel long press timer
-        this.cancelLongPressTimer();
-        
-        if (this.touchMoveHandler) {
-            document.removeEventListener('touchmove', this.touchMoveHandler, true);
-        }
-        
-        if (this.touchEndHandler) {
-            document.removeEventListener('touchend', this.touchEndHandler, true);
-            document.removeEventListener('touchcancel', this.touchEndHandler, true);
-        }
-        
-        this.save();
-        return false;
-    }
-
-    /**
-     * Handle long press event (touch only)
+     * Handle long press event (called by NoteDraggable)
      */
     private onLongPress(): void {
-        this.longPressTimer = undefined;
         this.deleteButton.style.display = 'block';
         this.colorPicker.style.display = 'block';
         this.updateUIElementPositions();
-    }
-
-    /**
-     * Cancel the long press timer
-     */
-    private cancelLongPressTimer(): void {
-        if (this.longPressTimer !== undefined) {
-            clearTimeout(this.longPressTimer);
-            this.longPressTimer = undefined;
-        }
     }
 
     /**

@@ -3,6 +3,7 @@
 // Import all modules
 import './types';
 import './html5Storage';
+import './note-draggable';
 import './note';
 import './layouts';
 import './fuchsia';
