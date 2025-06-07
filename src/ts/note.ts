@@ -27,6 +27,8 @@ class Note implements INote {
     private startX: number = 0;
     private startY: number = 0;
     private dirty: boolean = false;
+    private longPressTimer?: number;
+    private readonly LONG_PRESS_DURATION = 500;
 
     /**
      * Get the note's DOM element
@@ -338,6 +340,11 @@ class Note implements INote {
         document.addEventListener('touchend', this.touchEndHandler, true);
         document.addEventListener('touchcancel', this.touchEndHandler, true);
         
+        // Start long press timer
+        this.longPressTimer = window.setTimeout(() => {
+            this.onLongPress();
+        }, this.LONG_PRESS_DURATION);
+        
         return false;
     }   
 
@@ -348,6 +355,9 @@ class Note implements INote {
         if (this !== captured) {
             return true;
         }
+        
+        // Cancel long press timer when user starts dragging
+        this.cancelLongPressTimer();
         
         this.left = `${e.targetTouches[0].clientX - this.startX}px`;
         this.top = `${e.targetTouches[0].clientY - this.startY}px`;
@@ -361,6 +371,9 @@ class Note implements INote {
      * Handle touch end event
      */
     private onTouchEnd(e: TouchEvent): boolean {
+        // Cancel long press timer
+        this.cancelLongPressTimer();
+        
         if (this.touchMoveHandler) {
             document.removeEventListener('touchmove', this.touchMoveHandler, true);
         }
@@ -372,6 +385,26 @@ class Note implements INote {
         
         this.save();
         return false;
+    }
+
+    /**
+     * Handle long press event (touch only)
+     */
+    private onLongPress(): void {
+        this.longPressTimer = undefined;
+        this.deleteButton.style.display = 'block';
+        this.colorPicker.style.display = 'block';
+        this.updateUIElementPositions();
+    }
+
+    /**
+     * Cancel the long press timer
+     */
+    private cancelLongPressTimer(): void {
+        if (this.longPressTimer !== undefined) {
+            clearTimeout(this.longPressTimer);
+            this.longPressTimer = undefined;
+        }
     }
 
     /**
@@ -443,25 +476,41 @@ class Note implements INote {
      * Set up events for showing/hiding UI elements
      */
     private setupUIVisibilityEvents(note: HTMLDivElement): void {
-        // Show UI elements on mouseover
-        note.addEventListener('mouseover', () => {
-            this.deleteButton.style.display = 'block';
-            this.colorPicker.style.display = 'block';
-            this.updateUIElementPositions();
-        });
+        // Show UI elements on mouseover (desktop only)
+        if (!supportsTouch) {
+            note.addEventListener('mouseover', () => {
+                this.deleteButton.style.display = 'block';
+                this.colorPicker.style.display = 'block';
+                this.updateUIElementPositions();
+            });
+            
+            // Hide UI elements on mouseout (desktop only)
+            note.addEventListener('mouseout', (e) => {
+                // Check if the mouse is still over the note or its UI elements
+                const relatedTarget = e.relatedTarget as Node;
+                if (!note.contains(relatedTarget) && 
+                    relatedTarget !== this.deleteButton && 
+                    relatedTarget !== this.colorPicker && 
+                    !this.colorPicker.contains(relatedTarget)) {
+                    this.deleteButton.style.display = 'none';
+                    this.colorPicker.style.display = 'none';
+                }
+            });
+        }
         
-        // Hide UI elements on mouseout
-        note.addEventListener('mouseout', (e) => {
-            // Check if the mouse is still over the note or its UI elements
-            const relatedTarget = e.relatedTarget as Node;
-            if (!note.contains(relatedTarget) && 
-                relatedTarget !== this.deleteButton && 
-                relatedTarget !== this.colorPicker && 
-                !this.colorPicker.contains(relatedTarget)) {
-                this.deleteButton.style.display = 'none';
-                this.colorPicker.style.display = 'none';
-            }
-        });
+        // For touch devices, hide UI elements when touching elsewhere
+        if (supportsTouch) {
+            document.addEventListener('touchstart', (e) => {
+                const target = e.target as Node;
+                if (!note.contains(target) && 
+                    target !== this.deleteButton && 
+                    target !== this.colorPicker && 
+                    !this.colorPicker.contains(target)) {
+                    this.deleteButton.style.display = 'none';
+                    this.colorPicker.style.display = 'none';
+                }
+            });
+        }
     }
     
     /**
