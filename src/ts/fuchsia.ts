@@ -9,7 +9,7 @@
 class Info {
     private static readonly _appName = "fuchsia";
     private static readonly _author = "AndrewJ"; 
-    private static readonly _version = "2.3.3";
+    private static readonly _version = "2.3.4";
     private static readonly _date = "2025-06-07";
 	
     public static get appName(): string { return Info._appName; }
